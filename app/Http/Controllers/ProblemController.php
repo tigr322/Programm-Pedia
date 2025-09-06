@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
+use Illuminate\Support\Str;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -14,22 +15,45 @@ use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\Problem;
 use Inertia\Inertia;
+
 class ProblemController extends Controller
-{  public function storeProb(Request $request)
+{   public function storeProb(Request $request)
     {
-       
+        // 1) обычная валидация
         $validated = $request->validate([
-            'slug' => 'required|string|max:255',
-            'title' => 'required|string',
+            'slug'        => 'required|string|max:255|unique:problems,slug',
+            'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'metadata' => 'required|string',
+            // если metadata приходит строкой из инпута:
+            'metadata'    => 'nullable|string',
+            // если хочешь принимать JSON из фронта как объект — используй:
+            // 'metadata' => 'nullable|array',
         ]);
 
-        Problem::create($validated);
+        // 2) аккуратно упакуем metadata в массив (который сохранится как JSON)
+        // Если пришла строка — положим её в ключ "info".
+        $metaInput = $request->input('metadata');
+        $meta = null;
 
-        // редирект обратно с флеш-сообщением
-        return redirect()->back()->with('success', 'Проблема и решение успешно добавлены!');
+        if (is_null($metaInput) || $metaInput === '') {
+            $meta = null;
+        } elseif (is_array($metaInput)) {
+            $meta = $metaInput; // уже объект/массив из фронта
+        } else {
+            // пробуем распарсить как JSON-строку; если не получилось — кладём как простую строку
+            $decoded = json_decode($metaInput, true);
+            $meta = json_last_error() === JSON_ERROR_NONE ? $decoded : ['info' => $metaInput];
+        }
+
+        // 3) создаём запись
+        Problem::create([
+            'slug'        => $validated['slug'], 
+            'title'       => $validated['title'],
+            'description' => $validated['description'],
+            'metadata'    => $meta, // <- массив/null (Eloquent превратит в JSON)
+        ]);
+
+        return back()->with('success', 'Проблема успешно добавлена!');
     }
-       
     
 }

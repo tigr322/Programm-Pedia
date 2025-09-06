@@ -62,8 +62,23 @@ services:
       PHP_MAX_EXECUTION_TIME: 800
     depends_on:
       - db
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: programm-pedia-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY}
+    volumes:
+      - meili_data:/meili_data
+    command: ["meilisearch", "--db-path", "/meili_data", "--http-addr", "0.0.0.0:7700"]
+    ports: ["7700:7700"]
+    networks:
+      - default
 
 volumes:
   mysql-data:
   laravel-cache:
   laravel-storage:
+  meili_data:
+

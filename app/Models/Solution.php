@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Solution extends Model
 {
+    use Searchable;
+    public function searchableAs(): string { return 'solutions'; }
     protected $fillable = [
         'problem_id',
         'slug',
@@ -48,5 +51,16 @@ class Solution extends Model
     public function collections()
     {
         return $this->belongsToMany(Collection::class, 'collection_solution');
+    }
+    public function toSearchableArray(): array
+    {
+        return [
+            'id'         => $this->id,
+            'problem_id' => $this->problem_id,
+            'content'    => strip_tags($this->content),
+            'has_pdf'    => (bool)$this->pdf_path,
+           
+            'created_at' => $this->created_at?->toISOString(),
+        ];
     }
 }
