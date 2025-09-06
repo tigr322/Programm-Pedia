@@ -9,10 +9,7 @@ const props = defineProps({
   problems: Array,
 });
 
-/* -------------------- ФОРМЫ --------------------
-git config --global user.email "tigran05012002@mail.ru"
-  git config --global user.name "Adamyan Tigran"
- */
+/* -------------------- ФОРМЫ -------------------- */
 // форма для добавления новой ПРОБЛЕМЫ
 const problemForm = useForm({
   slug: '',
@@ -37,10 +34,6 @@ watchEffect(() => {
 const openSolutions = reactive({});
 const openAddForm   = reactive({});
 
-const safeInit = (refObj, key) => {
-  if (!refObj.value || typeof refObj.value !== 'object') refObj.value = {};
-  if (!(key in refObj.value)) refObj.value[key] = false;
-};
 
 const toggleObjKey = (obj, id) => {
   // приведи ключ к строке — иногда это помогает при странных id
@@ -56,14 +49,14 @@ const onFileChange = (problemId, e) => {
   solutionForms[problemId].pdf = file;
 };
 
-const submitSolution = (problemId) => {
+const submitSolution = (problemId, problemSlug) => {
   if (!solutionForms[problemId]) solutionForms[problemId] = useForm({ content: '', pdf: null });
-  solutionForms[problemId].post(route('solutions.store', problemId), {
+  solutionForms[problemId].post(route('solutions.store', { problem: problemSlug }), {
     forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
       solutionForms[problemId].reset();
-      openAddForm.value[problemId] = false;
+      openAddForm[problemId] = false;
     },
   });
 };
@@ -137,7 +130,7 @@ const submitProblem = () => {
                     <div v-if="sol.pdf_path" class="mt-2">
                       <!-- можно также использовать прямую ссылку /storage/solutions/.. -->
                       <a
-                        :href="route('solutions.download', sol.id)"
+                        :href="route('solutions.download', { solution: sol.id })"
                         target="_blank"
                         class="inline-flex items-center text-sm underline hover:no-underline"
                       >
@@ -160,16 +153,16 @@ const submitProblem = () => {
               <div v-if="openAddForm[String(prb.id)]" class="mt-5 rounded-md border bg-white p-4">
                 <h4 class="text-sm font-semibold text-gray-700 mb-3">Добавить решение</h4>
 
-                <form @submit.prevent="submitSolution(prb.id)" class="space-y-4" enctype="multipart/form-data">
+                <form @submit.prevent="submitSolution(prb.id, prb.slug)" class="space-y-4" enctype="multipart/form-data">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст решения</label>
                     <QuillEditor
-        v-model:content="solutionForms[prb.id].content"
-        contentType="html"
-        theme="snow"
-        toolbar="full"
-        style="height: 240px;"
-      />
+                      v-model:content="solutionForms[prb.id].content"
+                      contentType="html"
+                      theme="snow"
+                      toolbar="full"
+                      style="height: 240px;"
+                    />
                     <div v-if="solutionForms[prb.id].errors.content" class="text-sm text-red-500 mt-1">
                       {{ solutionForms[prb.id].errors.content }}
                     </div>

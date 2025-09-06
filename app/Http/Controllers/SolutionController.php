@@ -51,7 +51,7 @@ class SolutionController extends Controller
         if ($request->hasFile('pdf')) {
             $pdfPath = $request->file('pdf')->store('solutions', 'public');
         }
-
+        
         // создаём Solution через связь у проблемы
         $solution = $problem->solutions()->create([
             'slug'         => $slug,

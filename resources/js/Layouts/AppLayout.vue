@@ -1,9 +1,11 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
-
+import {computed} from 'vue'
 const page = usePage()
-const canLogin = page.props.canLogin
-const canRegister = page.props.canRegister
+
+const canLogin    = computed(() => page.props.canLogin)
+const canRegister = computed(() => page.props.canRegister)
+const isAuthed    = computed(() => !!page.props.auth?.user)
 </script>
 
 <template>
@@ -25,12 +27,12 @@ const canRegister = page.props.canRegister
         <!-- Login/Register/Dashboard -->
         <nav v-if="canLogin" class="flex items-center gap-3">
           <Link
-            v-if="page.props.auth?.user"
-            :href="route?.('dashboard') ?? '/dashboard'"
-            class="rounded-lg px-4 py-2 bg-gray-800 text-white text-sm font-semibold shadow hover:bg-gray-700 transition"
-          >
-            Дом
-          </Link>
+      v-if="isAuthed"
+      :href="route?.('dashboard') ?? '/dashboard'"
+      class="rounded-lg px-4 py-2 bg-gray-800 text-white text-sm font-semibold shadow hover:bg-gray-700 transition"
+    >
+      Дом
+    </Link>
 
           <template v-else>
             <Link

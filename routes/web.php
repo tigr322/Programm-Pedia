@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use App\Models\Problem;
 use App\Http\Controllers\SolutionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\MainController;
+
 use App\Models\Solution;
 
 Route::get('/', function () {
@@ -18,7 +20,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
+Route::get('/about', [MainController::class, 'about']);
 Route::get('/search', [SearchController::class, 'index'])
     ->name('search');
 Route::get('/dashboard', function () {
@@ -40,11 +42,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
-    Route::post('/problems/{problem}/solutions', [SolutionController::class, 'store'])
+    Route::post('/problems/{problem:slug}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
+
 
     Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
     ->name('solutions.download');
+
     Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
     ->name('problems.show');
 });
