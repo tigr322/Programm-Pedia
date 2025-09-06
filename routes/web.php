@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Problem;
 use App\Http\Controllers\SolutionController;
+use App\Models\Solution;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,13 +18,19 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-        $problem = Problem::all();
 
-        return Inertia::render('Dashboard', [
-            'problems' =>$problem,
-        ]);
-    
+Route::get('/dashboard', function () {
+    $problems = Problem::with([
+        'solutions' => function ($q) {
+            $q->latest('id'); // по желанию: сортировка решений
+        },
+    ])
+    ->latest('id')          // по желанию: сортировка проблем
+    ->get();
+
+    return Inertia::render('Dashboard', [
+        'problems' => $problems,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -31,11 +38,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
-    Route::post('/problems/{problem}/solutions', [SolutionController::class, 'store'])
-    ->name('solutions.store');
-
-    Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
-    ->name('solutions.download');
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::post('/problems', [\App\Http\Controllers\ProblemController::class, 'store'])
+            ->name('problems.store');
+    
+        Route::post('/problems/{problem}/solutions', [\App\Http\Controllers\SolutionController::class, 'store'])
+            ->name('solutions.store');
+    
+        Route::get('/solutions/{solution}/download', [\App\Http\Controllers\SolutionController::class, 'download'])
+            ->name('solutions.download');
+    });
+    
 });
 
 require __DIR__.'/auth.php';

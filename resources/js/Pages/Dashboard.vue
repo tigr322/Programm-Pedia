@@ -1,48 +1,77 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue';
+import { reactive, ref, watchEffect } from 'vue';
+import { QuillEditor } from '@vueup/vue-quill'
+
 const props = defineProps({
+  // ожидаем уже подгруженные решения: Problem::with('solutions')
   problems: Array,
 });
 
-// форма для добавления новой проблемы
-const form = useForm({
+/* -------------------- ФОРМЫ --------------------
+git config --global user.email "tigran05012002@mail.ru"
+  git config --global user.name "Adamyan Tigran"
+ */
+// форма для добавления новой ПРОБЛЕМЫ
+const problemForm = useForm({
   slug: '',
   title: '',
   description: '',
   metadata: '',
 });
 
-// forms на каждую проблему
-const forms = reactive(
-  Object.fromEntries(
-    (props.problems ?? []).map(p => [
-      p.id,
-      useForm({ content: '', pdf: null })
-    ])
-  )
-);
+// формы для добавления РЕШЕНИЙ (по проблеме)
+const solutionForms = reactive({});
 
-// разворот/сворачивание блоков "Решения" и "Добавить решение"
-const openSolutions = ref({});
-const openAddForm   = ref({});
+// если props.problems меняются, гарантируем наличие формы на каждую проблему
+watchEffect(() => {
+  (props.problems ?? []).forEach((p) => {
+    if (!solutionForms[p.id]) {
+      solutionForms[p.id] = useForm({ content: '', pdf: null });
+    }
+  });
+});
 
-const toggle = (obj, id) => { obj[id] = !obj[id]; };
+/* ------------- РЕАКТИВНЫЕ ПЕРЕКЛЮЧАТЕЛИ UI ------------- */
+const openSolutions = reactive({});
+const openAddForm   = reactive({});
 
+const safeInit = (refObj, key) => {
+  if (!refObj.value || typeof refObj.value !== 'object') refObj.value = {};
+  if (!(key in refObj.value)) refObj.value[key] = false;
+};
+
+const toggleObjKey = (obj, id) => {
+  // приведи ключ к строке — иногда это помогает при странных id
+  const key = String(id);
+  // инициализация и переключение
+  obj[key] = !obj[key];
+};
+
+/* -------------------- ХЕНДЛЕРЫ -------------------- */
 const onFileChange = (problemId, e) => {
+  if (!solutionForms[problemId]) solutionForms[problemId] = useForm({ content: '', pdf: null });
   const file = e.target.files?.[0] ?? null;
-  forms[problemId].pdf = file;
+  solutionForms[problemId].pdf = file;
 };
 
 const submitSolution = (problemId) => {
-  forms[problemId].post(route('solutions.store', problemId), {
+  if (!solutionForms[problemId]) solutionForms[problemId] = useForm({ content: '', pdf: null });
+  solutionForms[problemId].post(route('solutions.store', problemId), {
     forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
-      forms[problemId].reset();
+      solutionForms[problemId].reset();
       openAddForm.value[problemId] = false;
     },
+  });
+};
+
+const submitProblem = () => {
+  problemForm.post(route('problems.store'), {
+    preserveScroll: true,
+    onSuccess: () => problemForm.reset(),
   });
 };
 </script>
@@ -63,7 +92,7 @@ const submitSolution = (problemId) => {
           <ul class="space-y-4">
             <li
               v-for="prb in problems"
-              :key="prb.id"
+              :key="String(prb.id)"
               class="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition"
             >
               <div class="flex items-start justify-between gap-4">
@@ -79,40 +108,34 @@ const submitSolution = (problemId) => {
                 <div class="flex flex-col sm:flex-row gap-2">
                   <button
                     class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
-                    @click="toggle(openSolutions.value, prb.id)"
+                    @click="toggleObjKey(openSolutions, prb.id)"
                   >
-                    {{ (openSolutions.value?.[prb.id]) ? 'Скрыть решения' : 'Показать решения' }}
-                    <span v-if="prb.solutions?.length" class="ml-1 text-xs text-gray-500">
+                    {{ openSolutions[prb.id] ? 'Скрыть решения' : 'Показать решения' }}
+                    <span v-if="prb.solutions && prb.solutions.length" class="ml-1 text-xs text-gray-500">
                       ({{ prb.solutions.length }})
                     </span>
                   </button>
 
                   <button
                     class="px-3 py-2 text-sm rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
-                    @click="toggle(openAddForm.value, prb.id)"
+                   @click="toggleObjKey(openAddForm, prb.id)"
                   >
-                    {{ (openAddForm.value?.[prb.id]) ? 'Отменить' : '➕ Добавить решение' }}
+                    {{ openAddForm[prb.id] ? 'Отменить' : '➕ Добавить решение' }}
                   </button>
                 </div>
               </div>
 
               <!-- Список решений -->
-              <div v-if="openSolutions.value?.[prb.id]" class="mt-4 space-y-3">
+              <div v-if="openSolutions[String(prb.id)]" class="mt-4 space-y-3">
                 <h4 class="text-sm font-semibold text-gray-700">Решения:</h4>
 
-                <div
-                  v-if="prb.solutions?.length"
-                  class="space-y-3"
-                >
-                  <div
-                    v-for="sol in prb.solutions"
-                    :key="sol.id"
-                    class="rounded-md border bg-white p-3"
-                  >
-                    <p class="text-sm text-gray-800 whitespace-pre-wrap">
-                      {{ sol.content ?? '—' }}
-                    </p>
+                <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
+                  <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
+                    <div v-html="sol.content ?? ''" class="prose prose-sm max-w-none"></div>
+
+
                     <div v-if="sol.pdf_path" class="mt-2">
+                      <!-- можно также использовать прямую ссылку /storage/solutions/.. -->
                       <a
                         :href="route('solutions.download', sol.id)"
                         target="_blank"
@@ -121,6 +144,7 @@ const submitSolution = (problemId) => {
                         Скачать PDF
                       </a>
                     </div>
+
                     <div class="text-xs text-gray-500 mt-2">
                       {{ new Date(sol.created_at).toLocaleString() }}
                     </div>
@@ -133,20 +157,21 @@ const submitSolution = (problemId) => {
               </div>
 
               <!-- Форма добавления решения -->
-              <div v-if="openAddForm.value?.[prb.id]" class="mt-5 rounded-md border bg-white p-4">
+              <div v-if="openAddForm[String(prb.id)]" class="mt-5 rounded-md border bg-white p-4">
                 <h4 class="text-sm font-semibold text-gray-700 mb-3">Добавить решение</h4>
 
                 <form @submit.prevent="submitSolution(prb.id)" class="space-y-4" enctype="multipart/form-data">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст решения</label>
-                    <textarea
-                      v-model="forms[prb.id].content"
-                      rows="4"
-                      placeholder="Опиши решение…"
-                      class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
-                    ></textarea>
-                    <div v-if="forms[prb.id].errors.content" class="text-sm text-red-500 mt-1">
-                      {{ forms[prb.id].errors.content }}
+                    <QuillEditor
+        v-model:content="solutionForms[prb.id].content"
+        contentType="html"
+        theme="snow"
+        toolbar="full"
+        style="height: 240px;"
+      />
+                    <div v-if="solutionForms[prb.id].errors.content" class="text-sm text-red-500 mt-1">
+                      {{ solutionForms[prb.id].errors.content }}
                     </div>
                   </div>
 
@@ -158,8 +183,8 @@ const submitSolution = (problemId) => {
                       @change="onFileChange(prb.id, $event)"
                       class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-cyan-600 file:px-3 file:py-2 file:text-white hover:file:bg-cyan-700"
                     />
-                    <div v-if="forms[prb.id].errors.pdf" class="text-sm text-red-500 mt-1">
-                      {{ forms[prb.id].errors.pdf }}
+                    <div v-if="solutionForms[prb.id].errors.pdf" class="text-sm text-red-500 mt-1">
+                      {{ solutionForms[prb.id].errors.pdf }}
                     </div>
                   </div>
 
@@ -167,16 +192,12 @@ const submitSolution = (problemId) => {
                     <button
                       type="submit"
                       class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
-                      :disabled="forms[prb.id].processing"
+                      :disabled="solutionForms[prb.id].processing"
                     >
                       Сохранить
                     </button>
-                    <span v-if="forms[prb.id].processing" class="text-sm text-gray-500">
-                      Сохраняем…
-                    </span>
-                    <div v-if="forms[prb.id].recentlySuccessful" class="text-sm text-green-600">
-                      Готово!
-                    </div>
+                    <span v-if="solutionForms[prb.id].processing" class="text-sm text-gray-500">Сохраняем…</span>
+                    <div v-if="solutionForms[prb.id].recentlySuccessful" class="text-sm text-green-600">Готово!</div>
                   </div>
                 </form>
               </div>
@@ -184,64 +205,69 @@ const submitSolution = (problemId) => {
           </ul>
         </div>
 
-        <!-- Форма добавления -->
+        <!-- Форма добавления ПРОБЛЕМЫ -->
         <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">
             ➕ Добавить проблему
           </h2>
 
-          <form @submit.prevent="form.post(route('problems.store'))" class="space-y-4">
+          <form @submit.prevent="submitProblem" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Проблема</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Проблема (slug)</label>
               <input
-                v-model="form.slug"
+                v-model="problemForm.slug"
                 type="text"
                 placeholder="Краткое название проблемы"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
               />
-              <div v-if="form.errors.slug" class="text-sm text-red-500 mt-1">{{ form.errors.slug }}</div>
+              <div v-if="problemForm.errors.slug" class="text-sm text-red-500 mt-1">{{ problemForm.errors.slug }}</div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Общее</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Общее (title)</label>
               <textarea
-                v-model="form.title"
-                rows="4"
-                placeholder="Опиши решение проблемы"
+                v-model="problemForm.title"
+                rows="3"
+                placeholder="Краткое резюме"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
               ></textarea>
-              <div v-if="form.errors.title" class="text-sm text-red-500 mt-1">{{ form.errors.title }}</div>
+              <div v-if="problemForm.errors.title" class="text-sm text-red-500 mt-1">{{ problemForm.errors.title }}</div>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Описание проблемы</label>
               <textarea
-                v-model="form.description"
+                v-model="problemForm.description"
                 rows="4"
-                placeholder="Опиши решение проблемы"
+                placeholder="Опиши проблему подробнее"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
               ></textarea>
-              <div v-if="form.errors.description" class="text-sm text-red-500 mt-1">{{ form.errors.description }}</div>
+              <div v-if="problemForm.errors.description" class="text-sm text-red-500 mt-1">{{ problemForm.errors.description }}</div>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Метаданные</label>
               <textarea
-                v-model="form.metadata"
-                rows="4"
-                placeholder="Опиши решение проблемы"
+                v-model="problemForm.metadata"
+                rows="3"
+                placeholder='JSON или свободный текст (например: {"os":"macOS","php":"8.3"})'
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
               ></textarea>
-              <div v-if="form.errors.metadata" class="text-sm text-red-500 mt-1">{{ form.errors.metadata }}</div>
+              <div v-if="problemForm.errors.metadata" class="text-sm text-red-500 mt-1">{{ problemForm.errors.metadata }}</div>
             </div>
+
             <div>
               <button
                 type="submit"
                 class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition"
+                :disabled="problemForm.processing"
               >
                 Добавить
               </button>
             </div>
           </form>
         </div>
+
       </div>
     </div>
   </AuthenticatedLayout>
