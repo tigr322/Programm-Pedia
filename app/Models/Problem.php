@@ -16,6 +16,7 @@ class Problem extends Model
     ];
     // если хочешь фикс. имя индекса:
     public function searchableAs(): string { return 'problems'; }
+    public function getRouteKeyName(): string { return 'slug'; }
 
     // связь на решения (если ещё нет)
     public function solutions()

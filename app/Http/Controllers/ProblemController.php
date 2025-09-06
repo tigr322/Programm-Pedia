@@ -17,7 +17,15 @@ use App\Models\Problem;
 use Inertia\Inertia;
 
 class ProblemController extends Controller
-{   public function storeProb(Request $request)
+{   
+    public function show(Problem $problem)
+    {
+        return Inertia::render('Problems/Show', [
+            'problem' => $problem->load('solutions'),
+            // 'canEdit' => auth()->check() && auth()->user()->can('update', $problem), // по желанию
+        ]);
+    }
+    public function storeProb(Request $request)
     {
         // 1) обычная валидация
         $validated = $request->validate([

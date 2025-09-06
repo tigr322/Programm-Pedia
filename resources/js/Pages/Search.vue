@@ -35,7 +35,8 @@ watch(q, (v) => {
         <h2 class="font-semibold mb-2">Проблемы</h2>
         <ul class="space-y-2">
           <li v-for="p in problems" :key="p.id">
-            <Link :href="`/problems/${p.slug}`" class="underline">{{ p.title }}</Link>
+            <Link :href="route('problems.show', p.slug)">{{ p.title }}</Link>
+
             <div class="text-sm text-gray-500">
               {{ (p.description || '').slice(0, 140) }}<span v-if="(p.description || '').length > 140">…</span>
             </div>

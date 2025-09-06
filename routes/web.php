@@ -45,7 +45,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
     ->name('solutions.download');
-
+    Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
+    ->name('problems.show');
 });
 
 require __DIR__.'/auth.php';
