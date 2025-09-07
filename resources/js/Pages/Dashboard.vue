@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { reactive, ref, watchEffect } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
-
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 const props = defineProps({
   // ожидаем уже подгруженные решения: Problem::with('solutions')
   problems: Array,
@@ -90,7 +90,7 @@ const submitProblem = () => {
             >
               <div class="flex items-start justify-between gap-4">
                 <div>
-                  <h3 class="text-lg font-semibold text-cyan-700">
+                  <h3 class="text-lg font-semibold text-indigo-700">
                     {{ prb.slug ?? 'Без названия' }}
                   </h3>
                   <p class="text-sm text-gray-800 mt-2">
@@ -110,7 +110,7 @@ const submitProblem = () => {
                   </button>
 
                   <button
-                    class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-cyan-700"
+                    class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
                    @click="toggleObjKey(openAddForm, prb.id)"
                   >
                     {{ openAddForm[prb.id] ? 'Отменить' : 'Добавить решение' }}
@@ -124,7 +124,7 @@ const submitProblem = () => {
 
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
-                    <div v-html="sol.content ?? ''" class="prose prose-sm max-w-none"></div>
+                    <div class="prose max-w-none ql-editor" v-html="sol.content"></div>
 
 
                     <div v-if="sol.pdf_path" class="mt-2">
@@ -174,7 +174,7 @@ const submitProblem = () => {
                       type="file"
                       accept="application/pdf"
                       @change="onFileChange(prb.id, $event)"
-                      class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-700 file:px-3 file:py-2 file:text-white hover:file:bg-cyan-700"
+                      class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-700 file:px-3 file:py-2 file:text-white hover:file:bg-indigo-700"
                     />
                     <div v-if="solutionForms[prb.id].errors.pdf" class="text-sm text-red-500 mt-1">
                       {{ solutionForms[prb.id].errors.pdf }}
@@ -184,7 +184,7 @@ const submitProblem = () => {
                   <div class="flex items-center gap-3">
                     <button
                       type="submit"
-                      class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-cyan-700"
+                      class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
                       :disabled="solutionForms[prb.id].processing"
                     >
                       Сохранить
@@ -211,7 +211,7 @@ const submitProblem = () => {
                 v-model="problemForm.slug"
                 type="text"
                 placeholder="Краткое название проблемы"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
               <div v-if="problemForm.errors.slug" class="text-sm text-red-500 mt-1">{{ problemForm.errors.slug }}</div>
             </div>
@@ -222,7 +222,7 @@ const submitProblem = () => {
                 v-model="problemForm.title"
                 rows="3"
                 placeholder="Краткое резюме"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               ></textarea>
               <div v-if="problemForm.errors.title" class="text-sm text-red-500 mt-1">{{ problemForm.errors.title }}</div>
             </div>
@@ -233,7 +233,7 @@ const submitProblem = () => {
                 v-model="problemForm.description"
                 rows="4"
                 placeholder="Опиши проблему подробнее"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               ></textarea>
               <div v-if="problemForm.errors.description" class="text-sm text-red-500 mt-1">{{ problemForm.errors.description }}</div>
             </div>
@@ -244,7 +244,7 @@ const submitProblem = () => {
                 v-model="problemForm.metadata"
                 rows="3"
                 placeholder='JSON или свободный текст (например: {"os":"macOS","php":"8.3"})'
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               ></textarea>
               <div v-if="problemForm.errors.metadata" class="text-sm text-red-500 mt-1">{{ problemForm.errors.metadata }}</div>
             </div>
@@ -252,7 +252,7 @@ const submitProblem = () => {
             <div>
               <button
                 type="submit"
-                class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-cyan-700 transition"
+                class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900 transition"
                 :disabled="problemForm.processing"
               >
                 Добавить

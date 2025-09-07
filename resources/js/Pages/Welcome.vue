@@ -36,11 +36,7 @@ import { Link } from '@inertiajs/vue3'
         </div>
 
         <div class="relative">
-          <img
-            src="/images/landing-code.png"
-            alt="Code screenshot"
-            class="rounded-xl shadow-lg border"
-          />
+         
           <div class="absolute -bottom-6 -left-6 bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg shadow">
             🚀 Решения для Laravel, Vue, Docker
           </div>

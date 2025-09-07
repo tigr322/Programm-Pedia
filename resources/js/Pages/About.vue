@@ -44,7 +44,7 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <Link
           :href="route?.('search') ?? '/search'"
-          class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-cyan-700 transition shadow"
+          class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-indigo-900 transition shadow"
         >
           🔎 Открыть поиск
         </Link>
@@ -60,19 +60,19 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
     <!-- ЧТО ВНУТРИ -->
     <section class="grid md:grid-cols-3 gap-6">
       <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-        <h3 class="text-lg font-bold text-cyan-700">⚡ Молниеносный поиск</h3>
+        <h3 class="text-lg font-bold text-indigo-700">⚡ Молниеносный поиск</h3>
         <p class="mt-2 text-gray-600">
           Laravel Scout + Meilisearch. Фильтры, сортировки и релевантность — из коробки.
         </p>
       </div>
       <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-        <h3 class="text-lg font-bold text-cyan-700">🧩 Проблемы и решения</h3>
+        <h3 class="text-lg font-bold text-indigo-700">🧩 Проблемы и решения</h3>
         <p class="mt-2 text-gray-600">
           Структура «вопрос → несколько решений», якоря на конкретное решение и комментарии.
         </p>
       </div>
       <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-        <h3 class="text-lg font-bold text-cyan-700">📄 PDF-вложения</h3>
+        <h3 class="text-lg font-bold text-indigo-700">📄 PDF-вложения</h3>
         <p class="mt-2 text-gray-600">
           Прикрепляй инструкции и чек-листы. Скачивание в один клик.
         </p>
@@ -85,8 +85,8 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
       <div class="mt-4 flex flex-wrap gap-2">
         <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">Laravel 12</span>
         <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">PHP 8.3</span>
-        <span class="px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-sm">Vue 3 + Inertia</span>
-        <span class="px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-sm">TailwindCSS</span>
+        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">Vue 3 + Inertia</span>
+        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">TailwindCSS</span>
         <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">Meilisearch</span>
         <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">Laravel Scout</span>
         <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm">MySQL</span>
@@ -168,9 +168,9 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
         <div class="flex gap-3">
           <Link
             :href="route?.('dashboard') ?? '/dashboard'"
-            class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-cyan-700 transition shadow"
+            class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-indigo-900 transition shadow"
           >
-            ➕ Добавить проблему
+            Добавить проблему
           </Link>
           <Link
             :href="route?.('search') ?? '/search'"
