@@ -110,10 +110,10 @@ const submitProblem = () => {
                   </button>
 
                   <button
-                    class="px-3 py-2 text-sm rounded-lg bg-cyan-600 text-white hover:bg-cyan-700"
+                    class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-cyan-700"
                    @click="toggleObjKey(openAddForm, prb.id)"
                   >
-                    {{ openAddForm[prb.id] ? 'Отменить' : '➕ Добавить решение' }}
+                    {{ openAddForm[prb.id] ? 'Отменить' : 'Добавить решение' }}
                   </button>
                 </div>
               </div>
@@ -174,7 +174,7 @@ const submitProblem = () => {
                       type="file"
                       accept="application/pdf"
                       @change="onFileChange(prb.id, $event)"
-                      class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-cyan-600 file:px-3 file:py-2 file:text-white hover:file:bg-cyan-700"
+                      class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-700 file:px-3 file:py-2 file:text-white hover:file:bg-cyan-700"
                     />
                     <div v-if="solutionForms[prb.id].errors.pdf" class="text-sm text-red-500 mt-1">
                       {{ solutionForms[prb.id].errors.pdf }}
@@ -184,7 +184,7 @@ const submitProblem = () => {
                   <div class="flex items-center gap-3">
                     <button
                       type="submit"
-                      class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
+                      class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-cyan-700"
                       :disabled="solutionForms[prb.id].processing"
                     >
                       Сохранить
@@ -252,7 +252,7 @@ const submitProblem = () => {
             <div>
               <button
                 type="submit"
-                class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition"
+                class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-cyan-700 transition"
                 :disabled="problemForm.processing"
               >
                 Добавить

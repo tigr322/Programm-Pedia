@@ -44,7 +44,7 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <Link
           :href="route?.('search') ?? '/search'"
-          class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-cyan-600 text-white font-semibold hover:bg-cyan-700 transition shadow"
+          class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-cyan-700 transition shadow"
         >
           🔎 Открыть поиск
         </Link>
@@ -99,25 +99,25 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
       <h2 class="text-xl font-bold text-gray-900">🔧 Как это работает</h2>
       <ol class="mt-4 space-y-3">
         <li class="flex gap-3">
-          <div class="mt-1 h-6 w-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-sm">1</div>
+          <div class="mt-1 h-6 w-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-sm">1</div>
           <p class="text-gray-700">
             Добавляешь <span class="font-medium">проблему</span> через панель. Указываешь заголовок, описание и теги.
           </p>
         </li>
         <li class="flex gap-3">
-          <div class="mt-1 h-6 w-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-sm">2</div>
+          <div class="mt-1 h-6 w-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-sm">2</div>
           <p class="text-gray-700">
             Прикрепляешь одно или несколько <span class="font-medium">решений</span>, при необходимости — PDF.
           </p>
         </li>
         <li class="flex gap-3">
-          <div class="mt-1 h-6 w-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-sm">3</div>
+          <div class="mt-1 h-6 w-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-sm">3</div>
           <p class="text-gray-700">
             Scout индексирует запись в Meilisearch — поиск становится доступным сразу.
           </p>
         </li>
         <li class="flex gap-3">
-          <div class="mt-1 h-6 w-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-sm">4</div>
+          <div class="mt-1 h-6 w-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-sm">4</div>
           <p class="text-gray-700">
             На странице проблемы удобно просматриваешь решения, редактируешь и скачиваешь PDF.
           </p>
@@ -168,7 +168,7 @@ function toggle(i) { faqs.value[i].open = !faqs.value[i].open }
         <div class="flex gap-3">
           <Link
             :href="route?.('dashboard') ?? '/dashboard'"
-            class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-cyan-600 text-white font-semibold hover:bg-cyan-700 transition shadow"
+            class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-indigo-700 text-white font-semibold hover:bg-cyan-700 transition shadow"
           >
             ➕ Добавить проблему
           </Link>
