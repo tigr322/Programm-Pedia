@@ -21,18 +21,18 @@ return new class extends Migration {
         Schema::create('solutions', function (Blueprint $t) {
             $t->id();
             $t->foreignId('problem_id')->constrained()->cascadeOnDelete();
-            $t->string('slug')->unique();
-            $t->string('title');
+            $t->string('slug')->nullable();
+            $t->string('title')->nullable();
             $t->text('summary')->nullable();
             $t->json('environment')->nullable();
             $t->longText('root_cause')->nullable();
             $t->text('content')->nullable();
             $t->string('pdf_path')->nullable();
-            $t->longText('steps');
+            $t->longText('steps')->nullable();
             $t->longText('verification')->nullable();
             $t->longText('pitfalls')->nullable();
             $t->json('links')->nullable();
-            $t->unsignedInteger('score')->default(0);
+            $t->unsignedInteger('score')->nullable();
             $t->timestamps();
         });
 
