@@ -29,7 +29,7 @@ const isAuthed    = computed(() => !!page.props.auth?.user)
           <Link
       v-if="isAuthed"
       :href="route?.('dashboard') ?? '/dashboard'"
-      class="rounded-lg px-4 py-2 bg-gray-800 text-white text-sm font-semibold shadow hover:bg-gray-700 transition"
+      class="rounded-lg px-4 py-2 bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-900 transition"
     >
       Дом
     </Link>
