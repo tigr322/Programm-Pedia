@@ -51,7 +51,7 @@ const onFileChange = (problemId, e) => {
 
 const submitSolution = (problemId, problemSlug) => {
   if (!solutionForms[problemId]) solutionForms[problemId] = useForm({ content: '', pdf: null });
-  solutionForms[problemId].post(route('solutions.store', { problem: problemSlug }), {
+  solutionForms[problemId].post(route('solutions.store', { problem: problemId }), {
     forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {

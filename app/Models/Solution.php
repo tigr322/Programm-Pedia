@@ -21,7 +21,9 @@ class Solution extends Model
         'pitfalls',
         'links',
         'score',
+        'markdown',
 
+        'language',
         // добавляем новые
         'pdf_path',
         'content',

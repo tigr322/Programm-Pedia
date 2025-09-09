@@ -4,6 +4,8 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link, useForm, router } from '@inertiajs/vue3'
 import { onMounted, reactive, ref, watchEffect } from 'vue'
 
+
+
 defineOptions({ layout: AppLayout })
 
 const props = defineProps({
