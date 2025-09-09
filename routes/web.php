@@ -42,9 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
-    Route::post('/problems/{problem:slug}/solutions', [SolutionController::class, 'store'])
-    ->name('solutions.store');
-
+   
 
     Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
     ->name('solutions.download');
