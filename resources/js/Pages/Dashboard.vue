@@ -180,9 +180,7 @@ const submitProblem = () => {
                   </h3>
                 <div class="flex items-center justify-between mb-2">
 
-                  <div class="text-sm text-gray-500">
-                    {{ new Date(sol.created_at).toLocaleString() }}
-                  </div>
+                 
                   <button   v-if="isAuthed" 
                     class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
                     @click="openEdit(sol, prb.id)"
@@ -196,15 +194,18 @@ const submitProblem = () => {
                 v-html="sol.content"
               ></div>
 
-  <div v-if="sol.pdf_path" class="mt-2">
-    <a
-      :href="route('solutions.download', { solution: sol.id })"
-      target="_blank"
-      class="inline-flex items-center text-sm underline hover:no-underline"
-    >
-      Скачать PDF
-    </a>
-  </div>
+              <div class="flex gap-2 items-center">
+              <button
+                v-if="sol.pdf_path"
+                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                @click="downloadPdf(sol)"
+              >
+                Скачать PDF
+              </button>
+              <span class="text-xs text-gray-500">
+                {{ new Date(sol.created_at).toLocaleString() }}
+              </span>
+            </div>
 
   <!-- Форма редактирования -->
   <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
