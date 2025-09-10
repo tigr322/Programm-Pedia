@@ -125,7 +125,7 @@ const submitProblem = () => {
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
                     <div
-                      class="prose max-w-none ql-editor max-h-[500px] overflow-auto pr-3 custom-scroll"
+                      class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
                       v-html="sol.content"
                     ></div>
 
