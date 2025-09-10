@@ -132,12 +132,12 @@ const submitProblem = () => {
               <div class="flex items-start justify-between gap-4">
                 <div>
                   <h3 class="text-lg font-semibold text-indigo-700">
-                    {{ prb.slug ?? 'Без названия' }}
+                    Название: {{ prb.slug ?? 'Без названия' }}
                   </h3>
                  
 
                   <h3 v-if="prb.slug !== prb.description"  class="text-lg font-semibold text-indigo-700">
-                    {{ prb.description ?? 'Без описания' }}
+                    Описание: {{ prb.description ?? 'Без описания' }}
                   </h3>
 
                   <p class="text-sm text-gray-800 mt-2">
