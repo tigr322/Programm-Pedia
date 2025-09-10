@@ -10,9 +10,15 @@ const props = defineProps({
 });
 const page = usePage()
 
-const expanded = ref({});
+const expanded = reactive({})
+
+function isExpanded(id) {
+  return !!(id && expanded[id])
+}
+
 function toggleExpand(id) {
-  expanded.value[id] = !expanded.value[id];
+  if (!id) return
+  expanded[id] = !expanded[id]
 }
 const isAuthed    = computed(() => !!page.props.auth?.user)
 /* -------------------- ФОРМЫ -------------------- */
@@ -146,19 +152,20 @@ const submitProblem = () => {
                   </h3>
 
                   <div
-                  :class="[
-                    'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
-                    expanded[sol.id] ? 'max-h-[700px] overflow-auto' : 'max-h-[700px]'
-                  ]"
-                  v-html="sol.content"
-                ></div>
+      :class="[
+        'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
+        isExpanded(sol.id) ? 'max-h-[700px] overflow-auto' : 'max-h-[200px]'
+      ]"
+      v-html="sol.content"
+    ></div>
 
-                <button
-                  class="mt-2 text-indigo-600 text-sm hover:underline"
-                  @click="toggleExpand(sol)"
-                >
-                  {{ expanded[sol.id] ? 'Свернуть' : 'Показать больше' }}
-                </button>
+    <button
+      class="mt-2 text-indigo-600 text-sm hover:underline"
+      @click="toggleExpand(sol.id)"
+      type="button"
+    >
+      {{ isExpanded(sol.id) ? 'Свернуть' : 'Показать больше' }}
+    </button>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
