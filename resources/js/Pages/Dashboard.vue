@@ -180,7 +180,7 @@ const submitProblem = () => {
   </div>
 
   <div
-    class="prose max-w-none ql-editor max-h-[500px] overflow-auto pr-3 custom-scroll"
+    class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
     v-html="sol.content"
   ></div>
 

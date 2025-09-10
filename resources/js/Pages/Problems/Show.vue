@@ -134,7 +134,10 @@ onMounted(() => {
 
           <!-- Просмотр -->
           <div v-if="viewMode[String(sol.id)] === 'preview'" class="rounded-md border bg-white p-3">
-            <div v-html="sol.content || ''" class="prose prose-sm max-w-none"></div>
+            <div
+    class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
+    v-html="sol.content"
+  ></div>
             <p v-if="!sol.content" class="text-sm text-gray-500">Содержимое отсутствует.</p>
           </div>
 
