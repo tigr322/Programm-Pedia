@@ -23,7 +23,13 @@ const isAuthed    = computed(() => !!page.props.auth?.user)
           <Link :href="route?.('search') ?? '/search'" class="hover:text-indigo-600 transition">Поиск</Link>
           <Link href="/about" class="hover:text-indigo-600 transition">О проекте</Link>
         </nav>
-
+        <Link
+  
+      :href="route?.('dashboard') ?? '/dashboard'"
+      class="rounded-lg px-4 py-2 bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-900 transition"
+    >
+      Документации
+    </Link>
         <!-- Login/Register/Dashboard -->
         <nav v-if="canLogin" class="flex items-center gap-3">
           <Link
