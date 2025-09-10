@@ -208,7 +208,7 @@ const submitProblem = () => {
                 <div
       :class="[
         'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
-        isExpanded(sol.id) ? 'max-h-[700px] overflow-auto' : 'max-h-[200px]'
+        isExpanded(sol.id) ? 'max-h-[700px] overflow-auto' : 'max-h-[100px]'
       ]"
       v-html="sol.content"
     ></div>
