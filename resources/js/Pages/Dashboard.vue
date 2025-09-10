@@ -28,7 +28,7 @@ const solutionForms = reactive({});
 watchEffect(() => {
   (props.problems ?? []).forEach((p) => {
     if (!solutionForms[p.id]) {
-      solutionForms[p.id] = useForm({ content: '', pdf: null });
+      solutionForms[p.id] = useForm({slug: '', title: '', content: '', pdf: null });
     }
   });
 });
@@ -172,7 +172,14 @@ const submitProblem = () => {
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
                   
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
+                    <div class="text-sm text-gray-500">
+                      {{ sol.slug ?? 'Без названия' }}
+                  </div>
+                    <h3 class="text-lg font-semibold text-indigo-700">
+                    Название: {{ sol.title ?? 'Без названия' }}
+                  </h3>
                 <div class="flex items-center justify-between mb-2">
+
                   <div class="text-sm text-gray-500">
                     {{ new Date(sol.created_at).toLocaleString() }}
                   </div>
@@ -202,7 +209,12 @@ const submitProblem = () => {
   <!-- Форма редактирования -->
   <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
     <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
-
+    <input
+                v-model="solutionForms.title"
+                type="text"
+                placeholder="Краткое название решения"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
     <div class="space-y-3">
       <label class="block text-sm font-medium text-gray-700">Текст решения</label>
       <QuillEditor
@@ -264,6 +276,12 @@ const submitProblem = () => {
 
                 <form @submit.prevent="submitSolution(prb.id, prb.slug)" class="space-y-4" enctype="multipart/form-data">
                   <div>
+                    <input
+        v-model="solutionForms[prb.id].title"
+        type="text"
+        placeholder="Краткое название решения"
+        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      />
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст решения</label>
                     <QuillEditor
                       v-model:content="solutionForms[prb.id].content"
