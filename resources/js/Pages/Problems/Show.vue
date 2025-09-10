@@ -99,6 +99,12 @@ onMounted(() => {
           :id="`solution-${sol.id}`"
           class="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition"
         >
+                <div class="text-sm text-gray-500">
+                      {{ sol.slug ?? 'Без названия' }}
+                  </div>
+                    <h3 class="text-lg font-semibold text-indigo-700">
+                    Название: {{ sol.title ?? 'Без названия' }}
+                  </h3>
           <!-- Кнопки режима и Скачать PDF -->
           <div class="flex items-center justify-between gap-3 mb-3">
             <div class="flex gap-2">
