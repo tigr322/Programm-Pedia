@@ -47,8 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
     ->name('solutions.download');
 
-    Route::get('/problems/{problem:id}', [ProblemController::class, 'show'])
-    ->name('problems.show');
+// routes/web.php
+Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
+    ->name('solutions.store');
+
 
     Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
     ->name('problems.show');
