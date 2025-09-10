@@ -10,7 +10,10 @@ const props = defineProps({
 });
 const page = usePage()
 
-
+const expanded = ref({});
+function toggleExpand(id) {
+  expanded.value[id] = !expanded.value[id];
+}
 const isAuthed    = computed(() => !!page.props.auth?.user)
 /* -------------------- ФОРМЫ -------------------- */
 // форма для добавления новой ПРОБЛЕМЫ
@@ -142,9 +145,20 @@ const submitProblem = () => {
                     Описание: {{ prb.description ?? 'Без описания' }}
                   </h3>
 
-                  <p class="text-sm text-gray-800 mt-2">
-                    {{ prb.content }}
-                  </p>
+                  <div
+                  :class="[
+                    'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
+                    expanded[sol.id] ? 'max-h-[700px] overflow-auto' : 'max-h-[700px]'
+                  ]"
+                  v-html="sol.content"
+                ></div>
+
+                <button
+                  class="mt-2 text-indigo-600 text-sm hover:underline"
+                  @click="toggleExpand(sol.id)"
+                >
+                  {{ expanded[sol.id] ? 'Свернуть' : 'Показать больше' }}
+                </button>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
