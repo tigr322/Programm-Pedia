@@ -49,7 +49,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/problems/{problem}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
-    
+
+    Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
+    ->name('problems.show');
 });
 
 require __DIR__.'/auth.php';
