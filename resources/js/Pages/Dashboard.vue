@@ -134,11 +134,9 @@ const submitProblem = () => {
                   <h3 class="text-lg font-semibold text-indigo-700">
                     {{ prb.slug ?? 'Без названия' }}
                   </h3>
-                  <h3 class="text-lg font-semibold text-indigo-700">
-                    {{ prb.title ?? 'Без титульника' }}
-                  </h3>
+                 
 
-                  <h3 class="text-lg font-semibold text-indigo-700">
+                  <h3 v-if="prb.slug !== prb.description"  class="text-lg font-semibold text-indigo-700">
                     {{ prb.description ?? 'Без описания' }}
                   </h3>
 
