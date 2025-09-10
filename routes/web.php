@@ -35,8 +35,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
         'problems' => $problems,
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+})->name('dashboard');
+Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
+->name('solutions.download');
+Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
+->name('problems.show');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -44,16 +47,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
    
 
-    Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
-    ->name('solutions.download');
+
 
 // routes/web.php
     Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
 
 
-    Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
-    ->name('problems.show');
+
 });
 
 require __DIR__.'/auth.php';

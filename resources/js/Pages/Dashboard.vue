@@ -1,14 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
-import { reactive, ref, watchEffect } from 'vue';
+import { Head, useForm,usePage } from '@inertiajs/vue3';
+import { reactive, ref, watchEffect,computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 const props = defineProps({
   // ожидаем уже подгруженные решения: Problem::with('solutions')
   problems: Array,
 });
+const page = usePage()
 
+
+const isAuthed    = computed(() => !!page.props.auth?.user)
 /* -------------------- ФОРМЫ -------------------- */
 // форма для добавления новой ПРОБЛЕМЫ
 const problemForm = useForm({
@@ -147,7 +150,7 @@ const submitProblem = () => {
                     </span>
                   </button>
 
-                  <button
+                  <button   v-if="isAuthed"
                     class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
                    @click="toggleObjKey(openAddForm, prb.id)"
                   >
@@ -168,7 +171,7 @@ const submitProblem = () => {
     <div class="text-sm text-gray-500">
       {{ new Date(sol.created_at).toLocaleString() }}
     </div>
-    <button
+    <button   v-if="isAuthed" 
       class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
       @click="openEdit(sol, prb.id)"
     >
