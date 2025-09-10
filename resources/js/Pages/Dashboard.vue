@@ -179,7 +179,13 @@ const submitProblem = () => {
                     Название: {{ sol.title ?? 'Без названия' }}
                   </h3>
                 <div class="flex items-center justify-between mb-2">
-
+                  <button
+                v-if="sol.pdf_path"
+                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                @click="downloadPdf(sol)"
+              >
+                Скачать PDF
+              </button>
                  
                   <button   v-if="isAuthed" 
                     class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
@@ -195,13 +201,7 @@ const submitProblem = () => {
               ></div>
 
               <div class="flex gap-2 items-center">
-              <button
-                v-if="sol.pdf_path"
-                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
-                @click="downloadPdf(sol)"
-              >
-                Скачать PDF
-              </button>
+             
               <span class="text-xs text-gray-500">
                 {{ new Date(sol.created_at).toLocaleString() }}
               </span>
