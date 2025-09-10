@@ -124,11 +124,12 @@ const submitProblem = () => {
 
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
-                    <div class="prose max-w-none ql-editor" v-html="sol.content"></div>
-
+                    <div
+                      class="prose max-w-none ql-editor max-h-[500px] overflow-auto pr-3 custom-scroll"
+                      v-html="sol.content"
+                    ></div>
 
                     <div v-if="sol.pdf_path" class="mt-2">
-                      <!-- можно также использовать прямую ссылку /storage/solutions/.. -->
                       <a
                         :href="route('solutions.download', { solution: sol.id })"
                         target="_blank"
@@ -142,6 +143,7 @@ const submitProblem = () => {
                       {{ new Date(sol.created_at).toLocaleString() }}
                     </div>
                   </div>
+
                 </div>
 
                 <div v-else class="text-sm text-gray-500">
@@ -264,4 +266,10 @@ const submitProblem = () => {
       </div>
     </div>
   </AuthenticatedLayout>
+
 </template>
+<style>
+.custom-scroll::-webkit-scrollbar { width: 8px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 6px; }
+.custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+</style>
