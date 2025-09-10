@@ -42,13 +42,13 @@ const isAuthed    = computed(() => !!page.props.auth?.user)
               Войти
             </Link>
 
-            <Link
+            <!--<Link
               v-if="canRegister"
               :href="route?.('register') ?? '/register'"
               class="rounded-lg px-5 py-2 border border-indigo-600 text-indigo-600 text-sm font-semibold hover:bg-indigo-50 transition"
             >
               Регистрация
-            </Link>
+            </Link> -->
           </template>
         </nav>
       </div>
