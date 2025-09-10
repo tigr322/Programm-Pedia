@@ -33,6 +33,44 @@ watchEffect(() => {
 /* ------------- РЕАКТИВНЫЕ ПЕРЕКЛЮЧАТЕЛИ UI ------------- */
 const openSolutions = reactive({});
 const openAddForm   = reactive({});
+const editForms = reactive({});
+const openEditForm = reactive({});
+
+const openEdit = (sol, problemId) => {
+  const k = String(sol.id);
+  if (!editForms[k]) {
+    editForms[k] = useForm({
+      solution_id: sol.id,          // ключ для серверной логики
+      content: sol.content || '',
+      pdf: null,
+      title: sol.title ?? '',
+      slug: sol.slug ?? '',
+      summary: sol.summary ?? '',
+      markdown: sol.markdown ?? '',
+      code: sol.code ?? '',
+      language: sol.language ?? 'plaintext',
+    });
+  }
+  openEditForm[k] = !openEditForm[k];
+};
+
+const onEditFileChange = (solutionId, e) => {
+  const k = String(solutionId);
+  if (!editForms[k]) return;
+  editForms[k].pdf = e.target.files?.[0] ?? null;
+};
+
+const submitEdit = (problemId, solutionId) => {
+  const k = String(solutionId);
+  editForms[k].post(route('solutions.store', { problem: problemId }), {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      openEditForm[k] = false;
+      editForms[k].reset(); // очистит временный PDF; контент перезагрузится с сервера
+    },
+  });
+};
 
 
 const toggleObjKey = (obj, id) => {
@@ -115,6 +153,7 @@ const submitProblem = () => {
                   >
                     {{ openAddForm[prb.id] ? 'Отменить' : 'Добавить решение' }}
                   </button>
+                 
                 </div>
               </div>
 
@@ -123,26 +162,86 @@ const submitProblem = () => {
                 <h4 class="text-sm font-semibold text-gray-700">Решения:</h4>
 
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
+                  
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
-                    <div
-                      class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
-                      v-html="sol.content"
-                    ></div>
+  <div class="flex items-center justify-between mb-2">
+    <div class="text-sm text-gray-500">
+      {{ new Date(sol.created_at).toLocaleString() }}
+    </div>
+    <button
+      class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+      @click="openEdit(sol, prb.id)"
+    >
+      {{ openEditForm[String(sol.id)] ? 'Отменить' : 'Редактировать' }}
+    </button>
+  </div>
 
-                    <div v-if="sol.pdf_path" class="mt-2">
-                      <a
-                        :href="route('solutions.download', { solution: sol.id })"
-                        target="_blank"
-                        class="inline-flex items-center text-sm underline hover:no-underline"
-                      >
-                        Скачать PDF
-                      </a>
-                    </div>
+  <div
+    class="prose max-w-none ql-editor max-h-[500px] overflow-auto pr-3 custom-scroll"
+    v-html="sol.content"
+  ></div>
 
-                    <div class="text-xs text-gray-500 mt-2">
-                      {{ new Date(sol.created_at).toLocaleString() }}
-                    </div>
-                  </div>
+  <div v-if="sol.pdf_path" class="mt-2">
+    <a
+      :href="route('solutions.download', { solution: sol.id })"
+      target="_blank"
+      class="inline-flex items-center text-sm underline hover:no-underline"
+    >
+      Скачать PDF
+    </a>
+  </div>
+
+  <!-- Форма редактирования -->
+  <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
+    <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
+
+    <div class="space-y-3">
+      <label class="block text-sm font-medium text-gray-700">Текст решения</label>
+      <QuillEditor
+        v-model:content="editForms[String(sol.id)].content"
+        contentType="html"
+        theme="snow"
+        toolbar="full"
+        style="height: 240px;"
+      />
+      <div v-if="editForms[String(sol.id)].errors?.content" class="text-sm text-red-500">
+        {{ editForms[String(sol.id)].errors.content }}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">PDF (необязательно, заменит старый)</label>
+        <input
+          type="file"
+          accept="application/pdf"
+          @change="onEditFileChange(sol.id, $event)"
+          class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-700 file:px-3 file:py-2 file:text-white hover:file:bg-indigo-700"
+        />
+        <div v-if="editForms[String(sol.id)].errors?.pdf" class="text-sm text-red-500 mt-1">
+          {{ editForms[String(sol.id)].errors.pdf }}
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button
+          type="button"
+          class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50"
+          @click="openEditForm[String(sol.id)] = false"
+        >
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
+          :disabled="editForms[String(sol.id)].processing"
+          @click="submitEdit(prb.id, sol.id)"
+        >
+          Сохранить изменения
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
                 </div>
 
@@ -196,6 +295,7 @@ const submitProblem = () => {
                   </div>
                 </form>
               </div>
+              
             </li>
           </ul>
         </div>

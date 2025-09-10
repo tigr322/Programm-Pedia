@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     ->name('solutions.download');
 
 // routes/web.php
-Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
+    Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
 
 
