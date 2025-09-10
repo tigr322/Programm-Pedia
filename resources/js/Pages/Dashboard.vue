@@ -135,7 +135,6 @@ const submitProblem = () => {
                     Название: {{ prb.slug ?? 'Без названия' }}
                   </h3>
                  
-
                   <h3 v-if="prb.slug !== prb.description"  class="text-lg font-semibold text-indigo-700">
                     Описание: {{ prb.description ?? 'Без описания' }}
                   </h3>
@@ -173,22 +172,22 @@ const submitProblem = () => {
                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
                   
                   <div v-for="sol in prb.solutions" :key="String(sol.id)" class="rounded-md border bg-white p-3">
-  <div class="flex items-center justify-between mb-2">
-    <div class="text-sm text-gray-500">
-      {{ new Date(sol.created_at).toLocaleString() }}
-    </div>
-    <button   v-if="isAuthed" 
-      class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
-      @click="openEdit(sol, prb.id)"
-    >
-      {{ openEditForm[String(sol.id)] ? 'Отменить' : 'Редактировать' }}
-    </button>
-  </div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="text-sm text-gray-500">
+                    {{ new Date(sol.created_at).toLocaleString() }}
+                  </div>
+                  <button   v-if="isAuthed" 
+                    class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                    @click="openEdit(sol, prb.id)"
+                  >
+                    {{ openEditForm[String(sol.id)] ? 'Отменить' : 'Редактировать' }}
+                  </button>
+                </div>
 
-  <div
-    class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
-    v-html="sol.content"
-  ></div>
+              <div
+                class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
+                v-html="sol.content"
+              ></div>
 
   <div v-if="sol.pdf_path" class="mt-2">
     <a

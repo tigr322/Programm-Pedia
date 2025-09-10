@@ -121,7 +121,7 @@ onMounted(() => {
             <div class="flex gap-2 items-center">
               <button
                 v-if="sol.pdf_path"
-                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-cyan-700"
+                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
                 @click="downloadPdf(sol)"
               >
                 Скачать PDF
