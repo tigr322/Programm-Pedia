@@ -134,6 +134,14 @@ const submitProblem = () => {
                   <h3 class="text-lg font-semibold text-indigo-700">
                     {{ prb.slug ?? 'Без названия' }}
                   </h3>
+                  <h3 class="text-lg font-semibold text-indigo-700">
+                    {{ prb.title ?? 'Без титульника' }}
+                  </h3>
+
+                  <h3 class="text-lg font-semibold text-indigo-700">
+                    {{ prb.description ?? 'Без описания' }}
+                  </h3>
+
                   <p class="text-sm text-gray-800 mt-2">
                     {{ prb.content }}
                   </p>
