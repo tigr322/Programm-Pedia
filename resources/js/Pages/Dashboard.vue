@@ -144,7 +144,7 @@ const submitProblem = () => {
               <div class="flex items-start justify-between gap-4">
                 <div>
                   <h3 class="text-lg font-semibold text-indigo-900">
-                    Название: {{ prb.slug ?? 'Без названия' }}
+                   {{ prb.slug ?? 'Без названия' }}
                   </h3>
                  
                   <h3 v-if="prb.slug !== prb.description"  class="text-sm font-semibold text-gray-700">
