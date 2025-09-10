@@ -82,7 +82,10 @@ const toggleObjKey = (obj, id) => {
   // инициализация и переключение
   obj[key] = !obj[key];
 };
-
+function downloadPdf(sol) {
+  const href = route ? route('solutions.download', sol.id) : `/solutions/${sol.id}/download`
+  window.open(href, '_blank')
+}
 /* -------------------- ХЕНДЛЕРЫ -------------------- */
 const onFileChange = (problemId, e) => {
   if (!solutionForms[problemId]) solutionForms[problemId] = useForm({ content: '', pdf: null });
