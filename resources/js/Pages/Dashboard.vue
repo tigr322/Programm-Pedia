@@ -151,21 +151,7 @@ const submitProblem = () => {
                     Описание: {{ prb.description ?? 'Без описания' }}
                   </h3>
 
-                  <div
-      :class="[
-        'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
-        isExpanded(sol.id) ? 'max-h-[700px] overflow-auto' : 'max-h-[200px]'
-      ]"
-      v-html="sol.content"
-    ></div>
 
-    <button
-      class="mt-2 text-indigo-600 text-sm hover:underline"
-      @click="toggleExpand(sol.id)"
-      type="button"
-    >
-      {{ isExpanded(sol.id) ? 'Свернуть' : 'Показать больше' }}
-    </button>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-2">
@@ -219,10 +205,21 @@ const submitProblem = () => {
                   </button>
                 </div>
 
-              <div
-                class="prose max-w-none ql-editor max-h-[700px] overflow-auto pr-3 custom-scroll"
-                v-html="sol.content"
-              ></div>
+                <div
+      :class="[
+        'prose max-w-none ql-editor overflow-hidden pr-3 custom-scroll transition-all duration-300',
+        isExpanded(sol.id) ? 'max-h-[700px] overflow-auto' : 'max-h-[200px]'
+      ]"
+      v-html="sol.content"
+    ></div>
+
+    <button
+      class="mt-2 text-indigo-600 text-sm hover:underline"
+      @click="toggleExpand(sol.id)"
+      type="button"
+    >
+      {{ isExpanded(sol.id) ? 'Свернуть' : 'Показать больше' }}
+    </button>
 
               <div class="flex gap-2 items-center">
              
