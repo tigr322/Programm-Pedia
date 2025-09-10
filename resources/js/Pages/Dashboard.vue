@@ -155,7 +155,7 @@ const submitProblem = () => {
 
                 <button
                   class="mt-2 text-indigo-600 text-sm hover:underline"
-                  @click="toggleExpand(sol.id)"
+                  @click="toggleExpand(sol)"
                 >
                   {{ expanded[sol.id] ? 'Свернуть' : 'Показать больше' }}
                 </button>
