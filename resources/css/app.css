@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:fullscreen .ql-editor {
+    max-height: none !important;
+    height: 100vh;
+    overflow: auto;
+    padding: 1rem;
+}
