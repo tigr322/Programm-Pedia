@@ -47,16 +47,14 @@ watch(q, (v) => {
       <section v-if="solutions?.length">
         <h2 class="font-semibold mb-2">Решения</h2>
         <ul class="space-y-2">
-          <li v-for="s in solutions" :key="s.id">
-
-            <Link :href="route('problems.show', s.problem.slug)">
-            Решение #{{ s.id }}
-            </Link>
-
-            <div class="text-sm text-gray-500">
-              {{ (s.content || '').slice(0, 140) }}<span v-if="(s.content || '').length > 140">…</span>
-            </div>
-          </li>
+            <li v-for="s in solutions" :key="s.id">
+                <Link :href="route('problems.show', [s.problem.slug, s.id])">
+                    Решение #{{ s.id }}
+                </Link>
+                <div class="text-sm text-gray-500">
+                    {{ (s.content || '').slice(0, 140) }}<span v-if="(s.content || '').length > 140">…</span>
+                </div>
+            </li>
         </ul>
       </section>
 

@@ -17,12 +17,21 @@ use App\Models\Problem;
 use Inertia\Inertia;
 
 class ProblemController extends Controller
-{   
-    public function show(Problem $problem)
+{
+    public function show(Problem $problem, ?int $solution = null)
     {
+        // Грузим либо все решения, либо только выбранное
+        $problem->load(['solutions' => function ($q) use ($solution) {
+            if ($solution) {
+                $q->whereKey($solution); // where id = $solution
+            }
+            $q->latest('created_at');
+        }]);
+
         return Inertia::render('Problems/Show', [
-            'problem' => $problem->load('solutions'),
-            // 'canEdit' => auth()->check() && auth()->user()->can('update', $problem), // по желанию
+            'problem' => $problem,                 // уже с relation solutions
+            'selectedSolutionId' => $solution,     // чтобы можно было подсветить/проскроллить
+            'canEdit' => auth()->check(),          // как у тебя и планировалось
         ]);
     }
     public function storeProb(Request $request)
@@ -55,7 +64,7 @@ class ProblemController extends Controller
 
         // 3) создаём запись
         Problem::create([
-            'slug'        => $validated['slug'], 
+            'slug'        => $validated['slug'],
             'title'       => $validated['title'],
             'description' => $validated['description'],
             'metadata'    => $meta, // <- массив/null (Eloquent превратит в JSON)
@@ -63,5 +72,5 @@ class ProblemController extends Controller
 
         return back()->with('success', 'Проблема успешно добавлена!');
     }
-    
+
 }

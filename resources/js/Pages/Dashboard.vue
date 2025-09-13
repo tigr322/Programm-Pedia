@@ -232,8 +232,8 @@ const submitProblem = () => {
   <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
     <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
     <input
-                v-model="solutionForms.title"
-                type="text"
+          v-model="solutionForms.title"
+          type="text"
                 placeholder="Краткое название решения"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />

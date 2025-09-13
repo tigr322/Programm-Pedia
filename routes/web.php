@@ -26,10 +26,10 @@ Route::get('/search', [SearchController::class, 'index'])
 Route::get('/dashboard', function () {
     $problems = Problem::with([
         'solutions' => function ($q) {
-            $q->latest('id'); // по желанию: сортировка решений
+            $q->latest('id');
         },
     ])
-    ->latest('id')          // по желанию: сортировка проблем
+    ->latest('id')
     ->get();
 
     return Inertia::render('Dashboard', [
@@ -38,14 +38,15 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
 ->name('solutions.download');
-Route::get('/problems/{problem:slug}', [ProblemController::class, 'show'])
-->name('problems.show');
+Route::get('/problems/{problem:slug}/{solution?}', [ProblemController::class, 'show'])
+    ->whereNumber('solution')
+    ->name('problems.show');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
-   
+
 
 
 
