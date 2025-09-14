@@ -14,7 +14,7 @@ class Problem extends Model
         'description'    ,
         'metadata',
     ];
-    // если хочешь фикс. имя индекса:
+
     public function searchableAs(): string { return 'problems'; }
     public function getRouteKeyName(): string { return 'slug'; }
 
@@ -24,7 +24,7 @@ class Problem extends Model
         return $this->hasMany(Solution::class);
     }
     protected $casts = [
-        'metadata' => 'array', 
+        'metadata' => 'array',
     ];
     public function toSearchableArray(): array
     {

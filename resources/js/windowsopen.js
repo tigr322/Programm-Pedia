@@ -1,5 +1,10 @@
+// resources/js/windowsopen.js
+export default async function openFloatingWindow(sol) {
+    // Пытаемся собрать каноническую ссылку на это решение
+    const safeTitle = (sol.title ?? ('Решение #' + sol.id)).toString().replace(/</g, '&lt;')
+    const shareUrl = `${location.origin}/problems/${encodeURIComponent(sol.problem.slug)}/${sol.id}`
 
-async function openFloatingWindow(sol) {
+
     const html = `
     <style>
       html,body{margin:0;height:100%;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial}
@@ -13,8 +18,9 @@ async function openFloatingWindow(sol) {
     </style>
     <div class="wrap">
       <header>
-        <h1>${(sol.title ?? 'Решение #' + sol.id).toString().replace(/</g,'&lt;')}</h1>
+        <h1>${safeTitle}</h1>
         <div>
+          <button id="shareBtn">Поделиться</button>
           <button id="zoomIn">+</button>
           <button id="zoomOut">−</button>
           <button id="closeBtn">Закрыть</button>
@@ -31,16 +37,44 @@ async function openFloatingWindow(sol) {
         document.getElementById('zoomIn').onclick=()=>{ scale=Math.min(2, scale+0.1); content.style.zoom=scale }
         document.getElementById('zoomOut').onclick=()=>{ scale=Math.max(0.6, scale-0.1); content.style.zoom=scale }
         document.getElementById('closeBtn').onclick=()=>{ window.close() }
+
+        const shareData = {
+          title: ${JSON.stringify(safeTitle)},
+          text: ${JSON.stringify('Посмотри это решение в ProgrammPedia')},
+          url: ${JSON.stringify(shareUrl)}
+        }
+
+        const shareBtn = document.getElementById('shareBtn')
+        shareBtn.onclick = async () => {
+          try {
+            if (navigator.share) {
+              await navigator.share(shareData)
+            } else if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(shareData.url)
+              alert('Ссылка скопирована в буфер обмена')
+            } else {
+              // Фоллбек без HTTPS/клипборда
+              const ta = document.createElement('textarea')
+              ta.value = shareData.url
+              document.body.appendChild(ta)
+              ta.select()
+              document.execCommand('copy')
+              document.body.removeChild(ta)
+              alert('Ссылка скопирована в буфер обмена')
+            }
+          } catch(e) {
+            console.warn('Share failed', e)
+          }
+        }
       })()
     <\/script>
   `
 
-    // 1) Пытаемся Document Picture-in-Picture
-    // @ts-ignore
-    const hasDocPiP = 'documentPictureInPicture' in window && window.documentPictureInPicture?.requestWindow
+    // DocPiP отключён, чтобы можно было держать несколько окон одновременно
+    const hasDocPiP = false
+
     if (hasDocPiP) {
         try {
-            // @ts-ignore
             const pipWin = await window.documentPictureInPicture.requestWindow({ width: 1000, height: 700 })
             pipWin.document.write(html)
             pipWin.document.close()
@@ -50,10 +84,10 @@ async function openFloatingWindow(sol) {
         }
     }
 
-    // 2) Фоллбек: отдельное окно
-    const win = window.open('', '', 'width=1100,height=800,menubar=no,toolbar=no,location=no,status=no')
+    // Открываем отдельное окно — можно несколько
+    const win = window.open('', '_blank', 'width=1100,height=800,menubar=no,toolbar=no,location=no,status=no')
     if (win) {
-        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${(sol.title ?? 'Решение #' + sol.id).toString().replace(/</g,'&lt;')}</title></head><body>${html}</body></html>`)
+        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${safeTitle}</title></head><body>${html}</body></html>`)
         win.document.close()
     }
 }
