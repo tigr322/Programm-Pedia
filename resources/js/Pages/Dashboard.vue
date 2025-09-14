@@ -122,7 +122,6 @@ const submitProblem = () => {
 };
 </script>
 <script>
-
 async function openFloatingWindow(sol) {
     const html = `
     <style>
@@ -161,10 +160,9 @@ async function openFloatingWindow(sol) {
 
     // 1) Пытаемся Document Picture-in-Picture
     // @ts-ignore
-    const hasDocPiP = 'documentPictureInPicture' in window && window.documentPictureInPicture?.requestWindow
+    const hasDocPiP = false
     if (hasDocPiP) {
         try {
-            // @ts-ignore
             const pipWin = await window.documentPictureInPicture.requestWindow({ width: 1000, height: 700 })
             pipWin.document.write(html)
             pipWin.document.close()
@@ -174,14 +172,16 @@ async function openFloatingWindow(sol) {
         }
     }
 
-    // 2) Фоллбек: отдельное окно
-    const win = window.open('', '', 'width=1100,height=800,menubar=no,toolbar=no,location=no,status=no')
+    // Фоллбек: отдельное окно — можно открывать сколько угодно
+    const win = window.open('', '_blank', 'width=1100,height=800,menubar=no,toolbar=no,location=no,status=no')
     if (win) {
         win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${(sol.title ?? 'Решение #' + sol.id).toString().replace(/</g,'&lt;')}</title></head><body>${html}</body></html>`)
         win.document.close()
     }
 }
 </script>
+
+
 <template>
   <Head title="MyProgrammPedia" />
 
