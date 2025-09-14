@@ -6,6 +6,7 @@ import {onMounted, reactive, ref, watchEffect, onBeforeUnmount, computed} from '
 import openFloatingWindow from '@/windowsopen'
 import {QuillEditor} from "@vueup/vue-quill";
 import { router } from '@inertiajs/vue3'
+import { watch } from 'vue'
 
 const isFullscreen = ref(false)
 
@@ -78,13 +79,17 @@ const props = defineProps({
 })
 const page = usePage()
 const isAuthed    = computed(() => !!page.props.auth?.user)
-watchEffect(() => {
-    (props.problem ?? []).forEach((p) => {
-        if (!solutionForms[p.id]) {
-            solutionForms[p.id] = useForm({slug: '', title: '', content: '', pdf: null });
+
+watch(
+    () => props.problem?.id,
+    (id) => {
+        if (!id) return
+        if (!solutionForms[id]) {
+            solutionForms[id] = useForm({ slug: '', title: '', content: '', pdf: null })
         }
-    });
-});
+    },
+    { immediate: true }
+)
 const submitDelete = (solutionId) => {
     if (!confirm('Точно удалить решение?')) return
 
@@ -132,6 +137,10 @@ function downloadPdf(sol) {
 
 onMounted(() => {
     // Скролл к выбранному решению из урла или к selectedSolutionId
+    const p = props.problem
+    if (p?.id && !solutionForms[p.id]) {
+        solutionForms[p.id] = useForm({ slug: '', title: '', content: '', pdf: null })
+    }
     let targetId = null
     if (location.hash?.startsWith('#solution-')) {
         targetId = location.hash.replace('#solution-', '')
