@@ -31,7 +31,6 @@ Route::get('/dashboard', function () {
     ])
     ->latest('id')
     ->get();
-
     return Inertia::render('Dashboard', [
         'problems' => $problems,
     ]);
@@ -46,16 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
-
-
-
-
-// routes/web.php
     Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
-
-
-
 });
 
 require __DIR__.'/auth.php';
