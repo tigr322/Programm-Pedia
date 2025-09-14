@@ -7,20 +7,8 @@ import openFloatingWindow from '@/windowsopen'
 const previewRefs = reactive({}) // per-solution: ref на блок превью
 const isFullscreen = ref(false)
 
-function setPreviewRef(id) {
-    // вернём функцию для v-bind:ref
-    return (el) => { previewRefs[id] = { value: el } }
-}
 
-async function enterFullscreen(solId) {
-    const el = previewRefs[solId]?.value
-    if (!el) return
-    if (el.requestFullscreen) {
-        await el.requestFullscreen()
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen()
-    }
-}
+
 
 async function exitFullscreen() {
     if (document.fullscreenElement) {
@@ -184,7 +172,6 @@ onMounted(() => {
 
                     <!-- Просмотр -->
                     <div class="flex items-center gap-2 mb-2">
-                        <button class="px-3 py-1 text-sm rounded border" @click="enterFullscreen(sol.id)">⛶ На весь экран</button>
                         <button v-if="isFullscreen" class="px-3 py-1 text-sm rounded border" @click="exitFullscreen()">Выйти</button>
                     </div>
 
