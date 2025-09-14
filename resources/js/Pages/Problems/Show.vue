@@ -1,13 +1,54 @@
 <!-- resources/js/Pages/Problems/Show.vue -->
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link, useForm } from '@inertiajs/vue3'
-import { onMounted, reactive, ref, watchEffect,onBeforeUnmount } from 'vue'
+import {Link, useForm, usePage} from '@inertiajs/vue3'
+import {onMounted, reactive, ref, watchEffect, onBeforeUnmount, computed} from 'vue'
 import openFloatingWindow from '@/windowsopen'
-const previewRefs = reactive({}) // per-solution: ref на блок превью
+import {QuillEditor} from "@vueup/vue-quill";
+import { router } from '@inertiajs/vue3'
+
 const isFullscreen = ref(false)
 
+const editForms = reactive({});
+const openEditForm = reactive({});
+const solutionForms = reactive({});
 
+const openEdit = (sol, problemId) => {
+    const k = String(sol.id);
+    if (!editForms[k]) {
+        editForms[k] = useForm({
+            solution_id: sol.id,
+            content: sol.content || '',
+            pdf: null,
+            title: sol.title ?? '',
+            slug: sol.slug ?? '',
+            summary: sol.summary ?? '',
+            markdown: sol.markdown ?? '',
+            code: sol.code ?? '',
+            language: sol.language ?? 'plaintext',
+        });
+    }
+    openEditForm[k] = !openEditForm[k];
+};
+
+const onEditFileChange = (solutionId, e) => {
+    const k = String(solutionId);
+    if (!editForms[k]) return;
+    editForms[k].pdf = e.target.files?.[0] ?? null;
+};
+
+const submitEdit = (problemId, solutionId) => {
+    const k = String(solutionId);
+    editForms[k].post(route('solutions.store', { problem: problemId }), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            openEditForm[k] = false;
+            editForms[k].reset(); // очистит временный PDF; контент перезагрузится с сервера
+        },
+    });
+};
+const form = useForm({})
 
 
 async function exitFullscreen() {
@@ -35,7 +76,26 @@ const props = defineProps({
     selectedSolutionId: { type: [Number, String, null], default: null },
     canEdit: { type: Boolean, default: false },
 })
+const page = usePage()
+const isAuthed    = computed(() => !!page.props.auth?.user)
+watchEffect(() => {
+    (props.problem ?? []).forEach((p) => {
+        if (!solutionForms[p.id]) {
+            solutionForms[p.id] = useForm({slug: '', title: '', content: '', pdf: null });
+        }
+    });
+});
+const submitDelete = (solutionId) => {
+    if (!confirm('Точно удалить решение?')) return
 
+    form.delete(route('solutions.destroy', solutionId), {
+        preserveScroll: true,
+        onSuccess: () => {
+            const i = props.problem.solutions.findIndex(s => +s.id === +solutionId)
+            if (i !== -1) props.problem.solutions.splice(i, 1)
+        },
+    })
+}
 /* UI состояние */
 const openSolutions = ref(true)
 const viewMode = reactive({})   // per-solution: 'preview' | 'editor'
@@ -134,10 +194,11 @@ onMounted(() => {
                         {{ sol.slug ?? 'Без слага' }}
                     </div>
                     <h3 class="text-lg font-semibold text-indigo-700">
-                        Название: {{ sol.title ?? 'Без названия' }}
+                        Название: {{  sol.title ?? 'Без названия' }}
                     </h3>
 
-                    <!-- Кнопки режима + Скачать PDF -->
+
+
                     <div class="flex items-center justify-between gap-3 mb-3">
                         <div class="flex gap-2">
                             <button
@@ -147,16 +208,17 @@ onMounted(() => {
                             >
                                 Просмотр
                             </button>
-                            <button
-                                class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
-                                :class="{'opacity-60': viewMode[String(sol.id)] === 'editor'}"
-                                @click="viewMode[String(sol.id)] = 'editor'"
+                            <button   v-if="isAuthed"
+                                      class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                                      @click="openEdit(sol, problem.id)"
                             >
-                                Редактор
+                                {{ openEditForm[String(sol.id)] ? 'Отменить' : 'Редактировать' }}
                             </button>
+
                         </div>
 
                         <div class="flex gap-2 items-center">
+
                             <button
                                 v-if="sol.pdf_path"
                                 class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
@@ -164,12 +226,71 @@ onMounted(() => {
                             >
                                 Скачать PDF
                             </button>
+                            <button v-if="isAuthed"
+                                    class="px-3 py-2 text-sm rounded-lg border bg-red-600 hover:bg-red-900 text-slate-100"
+                                    @click="submitDelete(sol.id)"
+                            >
+                                Удалить
+                            </button>
                             <span class="text-xs text-gray-500">
-                {{ new Date(sol.created_at).toLocaleString() }}
-              </span>
+                                {{ new Date(sol.created_at).toLocaleString() }}
+                              </span>
                         </div>
                     </div>
+                    <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
+                        <input
+                            v-model="sol.title"
+                            type="text"
+                            placeholder="Краткое название решения"
+                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
 
+                        <div class="space-y-3">
+                            <label class="block text-sm font-medium text-gray-700">Текст решения</label>
+                            <QuillEditor
+                                v-model:content="editForms[String(sol.id)].content"
+                                contentType="html"
+                                theme="snow"
+                                toolbar="full"
+                                style="height: 240px;"
+                            />
+                            <div v-if="editForms[String(sol.id)].errors?.content" class="text-sm text-red-500">
+                                {{ editForms[String(sol.id)].errors.content }}
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">PDF (необязательно, заменит старый)</label>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    @change="onEditFileChange(sol.id, $event)"
+                                    class="w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-700 file:px-3 file:py-2 file:text-white hover:file:bg-indigo-700"
+                                />
+                                <div v-if="editForms[String(sol.id)].errors?.pdf" class="text-sm text-red-500 mt-1">
+                                    {{ editForms[String(sol.id)].errors.pdf }}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50"
+                                    @click="openEditForm[String(sol.id)] = false"
+                                >
+                                    Отмена
+                                </button>
+                                <button
+                                    type="button"
+                                    class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
+                                    :disabled="editForms[String(sol.id)].processing"
+                                    @click="submitEdit(problem.id, sol.id)"
+                                >
+                                    Сохранить изменения
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Просмотр -->
                     <div class="flex items-center gap-2 mb-2">
                         <button v-if="isFullscreen" class="px-3 py-1 text-sm rounded border" @click="exitFullscreen()">Выйти</button>

@@ -12,8 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SolutionController extends Controller
 {
-    
-  
+    public function destroy(Solution $solution)
+    {
+        $solution->delete();
+        return back()->with('success', 'Удалено');
+    }
+
 public function store(Request $request, Problem $problem)
 {
     $solutionId = $request->input('solution_id');

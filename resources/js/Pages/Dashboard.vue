@@ -33,6 +33,8 @@ const problemForm = useForm({
 // формы для добавления РЕШЕНИЙ (по проблеме)
 const solutionForms = reactive({});
 
+const form = useForm({})
+
 // если props.problems меняются, гарантируем наличие формы на каждую проблему
 watchEffect(() => {
   (props.problems ?? []).forEach((p) => {

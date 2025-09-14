@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/create/problem', [ProblemController::class, 'storeProb'])->name('problems.store');
     Route::post('/problems/{problem:id}/solutions', [SolutionController::class, 'store'])
     ->name('solutions.store');
+    Route::delete('/solutions/{solution}', [SolutionController::class, 'destroy'])
+        ->name('solutions.destroy');
 });
 
 require __DIR__.'/auth.php';
