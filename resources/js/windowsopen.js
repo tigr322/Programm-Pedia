@@ -1,14 +1,16 @@
 // resources/js/windowsopen.js
+// resources/js/windowsopen.js
 function encodeSlugSafe(slug) {
     try { slug = decodeURIComponent(slug) } catch (_) {}
     return encodeURIComponent(slug)
 }
-export default async function openFloatingWindow(sol) {
-    // Пытаемся собрать каноническую ссылку на это решение
-    const safeTitle = (sol.title ?? ('Решение #' + sol.id)).toString().replace(/</g, '&lt;')
-    const encodedSlug = encodeSlugSafe(sol.problem.slug) // ← ключевая строка
 
+export default async function openFloatingWindow(sol) {
+    const safeTitle = (sol.title ?? ('Решение #' + sol.id)).toString().replace(/</g, '&lt;')
+    // ВАЖНО: slug берём из sol.problem.slug и всегда кодируем
+    const encodedSlug = encodeSlugSafe(sol.problem.slug)
     const shareUrl = `${location.origin}/problems/${encodedSlug}/${sol.id}`
+
 
 
     const html = `
