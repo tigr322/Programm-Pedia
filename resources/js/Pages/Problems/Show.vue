@@ -122,7 +122,7 @@ watchEffect(() => {
 function saveSolution(sol) {
     if (!props.canEdit) return
     const k = String(sol.id)
-    forms[k].put(route('solutions.update', sol.id), {
+    forms[k].put(route('solutions.store', sol.id), {
         preserveScroll: true,
         onSuccess: () => {
             viewMode[k] = 'preview'
@@ -249,7 +249,7 @@ onMounted(() => {
                     <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
                         <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
                         <input
-                            v-model="sol.title"
+                            v-model="editForms[String(sol.id)].title"
                             type="text"
                             placeholder="Краткое название решения"
                             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"

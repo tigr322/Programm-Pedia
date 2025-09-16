@@ -18,22 +18,27 @@ use Inertia\Inertia;
 
 class ProblemController extends Controller
 {
-    public function show(Problem $problem, ?int $solution = null)
+    public function show(int $problem, ?int $solution = null)
     {
-        // Грузим либо все решения, либо только выбранное
-        $problem->load(['solutions' => function ($q) use ($solution) {
-            if ($solution) {
-                $q->whereKey($solution); // where id = $solution
-            }
-            $q->latest('created_at');
-        }]);
+        $query = Problem::with('solutions');
+
+        $problemModel = $query->findOrFail($problem);
+
+        if ($solution) {
+            // если надо вернуть только одно решение
+            $problemModel->setRelation(
+                'solutions',
+                $problemModel->solutions->where('id', $solution)->values()
+            );
+        }
 
         return Inertia::render('Problems/Show', [
-            'problem' => $problem,                 // уже с relation solutions
-            'selectedSolutionId' => $solution,     // чтобы можно было подсветить/проскроллить
-            'canEdit' => auth()->check(),          // как у тебя и планировалось
+            'problem'            => $problemModel,
+            'selectedSolutionId' => $solution,
+            'canEdit'            => auth()->check(),
         ]);
     }
+
     public function storeProb(Request $request)
     {
         // 1) обычная валидация

@@ -37,7 +37,7 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
 ->name('solutions.download');
-Route::get('/problems/{problem:slug}/{solution?}', [ProblemController::class, 'show'])
+Route::get('/problems/{problem}/{solution?}', [ProblemController::class, 'show'])
     ->whereNumber('solution')
     ->name('problems.show');
 Route::middleware('auth')->group(function () {
