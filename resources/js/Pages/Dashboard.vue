@@ -241,11 +241,11 @@ const submitProblem = () => {
   <div v-if="openEditForm[String(sol.id)]" class="mt-4 rounded-md border p-4 bg-white">
     <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать решение</h4>
     <input
-          v-model="solutionForms.title"
+          v-model="editForms[String(sol.id)].title"
           type="text"
                 placeholder="Краткое название решения"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
+              required/>
     <div class="space-y-3">
       <label class="block text-sm font-medium text-gray-700">Текст решения</label>
       <QuillEditor
