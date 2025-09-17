@@ -306,7 +306,7 @@ onMounted(() => {
                     </div>
 
                     <button class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
-                            @click="openFloatingWindow({ ...sol, problem: { slug: problem.slug } })">
+                            @click="openFloatingWindow({ ...sol, problem: { id: problem.id } })">
                         Открыть в отдельном окне
                     </button>
 
@@ -344,7 +344,7 @@ onMounted(() => {
                     <div class="mt-3 text-xs text-gray-500 flex flex-wrap gap-3">
                         <a :href="`#solution-${sol.id}`" class="underline hover:no-underline">Ссылка на это решение</a>
                         <Link
-                            :href="route?.('problems.show', problem.slug) ?? `/problems/${encodeURIComponent(problem.slug)}`"
+                            :href="route?.('problems.show', problem.id) ?? `/problems/${problem.id}`"
                             class="underline hover:no-underline"
                         >
                             К началу проблемы

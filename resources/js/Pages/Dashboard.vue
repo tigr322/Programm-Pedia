@@ -203,7 +203,7 @@ const submitProblem = () => {
 
 
                     <button class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
-                            @click="openFloatingWindow({ ...sol, problem: { slug: prb.slug } })">
+                            @click="openFloatingWindow({ ...sol, problem: { id: prb.id } })">
                         Открыть в отдельном окне
                     </button>
                   <button   v-if="isAuthed"

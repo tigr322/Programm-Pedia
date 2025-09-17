@@ -5,7 +5,7 @@ function encodeSlugSafe(slug) {
 }
 export default async function openFloatingWindow(sol) {
     const safeTitle = (sol.title ?? ('Решение #' + sol.id)).toString().replace(/</g, '&lt;')
-    const encodedSlug = encodeSlugSafe(sol.problem.slug)
+    const encodedSlug = sol.problem.id
     const shareUrl = `${location.origin}/problems/${encodedSlug}/${sol.id}`
     const html = `
     <style>
