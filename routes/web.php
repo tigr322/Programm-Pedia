@@ -24,13 +24,11 @@ Route::get('/about', [MainController::class, 'about']);
 Route::get('/search', [SearchController::class, 'index'])
     ->name('search');
 Route::get('/dashboard', function () {
-    $problems = Problem::with([
-        'solutions' => function ($q) {
-            $q->latest('id');
-        },
-    ])->where('personaly', false)
-    ->latest('id')
-    ->get();
+    $problems = Problem::with(['solutions' => fn($q) => $q->latest('id')])
+        ->when(null, fn($query) => $query->where('personaly', false))
+        ->latest('id')
+        ->get();
+
     return Inertia::render('Dashboard', [
         'problems' => $problems,
     ]);
