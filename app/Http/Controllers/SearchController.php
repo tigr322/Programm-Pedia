@@ -27,11 +27,11 @@ class SearchController
             $problems  = Problem::search($q)->take(10)->get();
         } else {
             // гость видит только публичные (false или null)
-            $problems  = Problem::search($q)
-            ->where('personaly', false)
-            ->orWhereNull('personaly')
-                ->take(10)
-                ->get();
+            $problems = Problem::search($q)
+            ->take(10)
+            ->get()
+            ->filter(fn ($p) => $p->personaly === false || is_null($p->personaly));
+        
         }
         $solutions = Solution::search($q)->take(10)->get();
         $solutions->load('problem:id,slug');
