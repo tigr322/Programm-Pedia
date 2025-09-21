@@ -23,31 +23,27 @@ Route::get('/', function () {
 Route::get('/about', [MainController::class, 'about']);
 Route::get('/search', [SearchController::class, 'index'])
     ->name('search');
-Route::get('/dashboard', function () {
-    if(!auth()->check()) {
-        $problems = Problem::with(['solutions' => fn($q) => $q->latest('id')])
-        ->when(null, fn($query) => $query->where('personaly', false))
-        ->latest('id')
-        ->get();
-    }else{
-        $id = auth()->user()->id;
-        $problems = Problem::with(['solutions' => fn($q) => $q->latest('id')])
-        ->when($id, fn($query) => $query->where(function($q) use ($id) {
-            $q->where('personaly', false)
-              ->orWhere(function($q2) use ($id) {
-                  $q2->where('personaly', true)
-                     ->where('user_id', $id);
-              });
-        }))
-        ->latest('id')
-        ->get();
-    } 
+    Route::get('/dashboard', function () {
+        $base = Problem::with(['solutions' => fn($q) => $q->latest('id')])
+            ->latest('id');
     
-
-    return Inertia::render('Dashboard', [
-        'problems' => $problems,
-    ]);
-})->name('dashboard');
+        if (!auth()->check()) {
+            $problems = $base->where('personaly', false)->get();
+        } else {
+            $id = auth()->id();
+            $problems = $base
+                ->where(function ($q) use ($id) {
+                    $q->where('personaly', false)
+                      ->orWhere(function ($q2) use ($id) {
+                          $q2->where('personaly', true)->where('user_id', $id);
+                      });
+                })
+                ->get();
+        }
+    
+        return Inertia::render('Dashboard', ['problems' => $problems]);
+    })->name('dashboard');
+    
 Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
 ->name('solutions.download');
 Route::get('/problems/{problem}/{solution?}', [ProblemController::class, 'show'])
