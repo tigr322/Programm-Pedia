@@ -22,17 +22,7 @@ class SearchController
         }
 
         // при поиске Scout вернёт Eloquent-коллекции -> можно вызывать load()
-        if(auth()->check()) {
-            // авторизованный видит всё
-            $problems  = Problem::search($q)->take(10)->get();
-        } else {
-            // гость видит только публичные (false или null)
-            $problems = Problem::search($q)
-            ->take(10)
-            ->get()
-            ->filter(fn ($p) => $p->personaly === false || is_null($p->personaly));
-        
-        }
+        $problems  = Problem::search($q)->take(10)->get();
         $solutions = Solution::search($q)->take(10)->get();
         $solutions->load('problem:id,slug');
 
