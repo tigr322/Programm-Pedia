@@ -28,21 +28,18 @@ Route::get('/search', [SearchController::class, 'index'])
             ->latest('id');
     
         if (!auth()->check()) {
+            // гость видит только публичные
             $problems = $base->where('personaly', false)->get();
         } else {
-            $id = auth()->id();
-            $problems = $base
-                ->where(function ($q) use ($id) {
-                    $q->where('personaly', false)
-                      ->orWhere(function ($q2) use ($id) {
-                          $q2->where('personaly', true)->where('user_id', $id);
-                      });
-                })
-                ->get();
+            // авторизованный видит всё
+            $problems = $base->get();
         }
     
-        return Inertia::render('Dashboard', ['problems' => $problems]);
+        return Inertia::render('Dashboard', [
+            'problems' => $problems,
+        ]);
     })->name('dashboard');
+    
     
 Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
 ->name('solutions.download');
