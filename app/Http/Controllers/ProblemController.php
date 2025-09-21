@@ -20,7 +20,18 @@ class ProblemController extends Controller
 {
     public function show(int $problem, ?int $solution = null)
     {
-        $query = Problem::with('solutions');
+        if(auth()->check()) {
+            // авторизованный видит всё
+            $query = Problem::with('solutions');
+                } else {
+            // гость видит только публичные (false или null)
+            $query = Problem::with(['solutions' => fn($q) => $q->latest('id')])
+                ->where(function ($q) {
+                    $q->where('personaly', false)
+                      ->orWhereNull('personaly');
+                });
+        }
+        
 
         $problemModel = $query->findOrFail($problem);
 
