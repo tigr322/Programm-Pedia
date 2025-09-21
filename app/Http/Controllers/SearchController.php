@@ -28,7 +28,8 @@ class SearchController
         } else {
             // гость видит только публичные (false или null)
             $problems  = Problem::search($q)
-                ->whereRaw('(personaly = ? OR personaly IS NULL)', [false])
+            ->where('personaly', false)
+            ->orWhereNull('personaly')
                 ->take(10)
                 ->get();
         }
