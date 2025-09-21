@@ -28,7 +28,7 @@ Route::get('/dashboard', function () {
         'solutions' => function ($q) {
             $q->latest('id');
         },
-    ])
+    ])->where('personaly', false)
     ->latest('id')
     ->get();
     return Inertia::render('Dashboard', [

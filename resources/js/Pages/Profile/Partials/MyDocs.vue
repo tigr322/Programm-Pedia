@@ -5,9 +5,9 @@ import { reactive, ref, watchEffect,computed } from 'vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import openFloatingWindow from '@/windowsopen'
 const props = defineProps({
-  // ожидаем уже подгруженные решения: Problem::with('solutions')
-  problems: Array,
-});
+  problems: { type: Array, default: () => [] },
+  personalyDocs: { type: Number, default: 0, },
+})
 const page = usePage()
 
 const expanded = reactive({})
@@ -125,25 +125,28 @@ const submitProblem = () => {
 };
 </script>
 
-
-
 <template>
-  <Head title="MyProgrammPedia" />
+  <section class="space-y-6">
+    <header>
+      <h2 class="text-lg font-medium text-gray-900">Мои личные документации</h2>
+      <p class="mt-1 text-sm text-gray-600">
+        Здесь вы можете просмотреть и управлять своими личными документациями.
+      </p>
+    </header>
 
-  <AuthenticatedLayout>
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+   
+        Всего личных: <strong>{{ props.personalyDocs }}</strong>
 
-        <!-- Список проблем -->
+        
         <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">
-            📌 Список проблем и решений
+            📌 Список личных проблем и решений
           </h2>
 
           <ul class="space-y-4">
             <li
-              v-for="prb in problems"
-              :key="String(prb.id)"
+               v-for="prb in props.problems.filter(pr => pr.personaly)"
+        :key="prb.id"
               class="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition"
             >
               <div class="flex items-start justify-between gap-4">
@@ -356,92 +359,5 @@ const submitProblem = () => {
             </li>
           </ul>
         </div>
-
-        <!-- Форма добавления ПРОБЛЕМЫ -->
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">
-            ➕ Добавить проблему
-          </h2>
-
-          <form @submit.prevent="submitProblem" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Проблема (slug)</label>
-              <input
-                v-model="problemForm.slug"
-                type="text"
-                placeholder="Краткое название проблемы"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
-              <div v-if="problemForm.errors.slug" class="text-sm text-red-500 mt-1">{{ problemForm.errors.slug }}</div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Общее (title)</label>
-              <textarea
-                v-model="problemForm.title"
-                rows="3"
-                placeholder="Краткое резюме"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              ></textarea>
-              <div v-if="problemForm.errors.title" class="text-sm text-red-500 mt-1">{{ problemForm.errors.title }}</div>
-            </div>
-
-            <div v-if="isAuthed" class="mt-4">
-  <label class="inline-flex items-center gap-2">
-    <input
-      type="checkbox"
-      v-model="problemForm.personaly"
-      class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-    />
-    <span class="text-sm text-gray-700">Добавить в личные</span>
-  </label>
-
-  <p v-if="problemForm.errors.personaly" class="text-sm text-red-500 mt-1">
-    {{ problemForm.errors.personaly }}
-  </p>
-</div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Описание проблемы</label>
-              <textarea
-                v-model="problemForm.description"
-                rows="4"
-                placeholder="Опиши проблему подробнее"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              ></textarea>
-              <div v-if="problemForm.errors.description" class="text-sm text-red-500 mt-1">{{ problemForm.errors.description }}</div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Метаданные</label>
-              <textarea
-                v-model="problemForm.metadata"
-                rows="3"
-                placeholder='JSON или свободный текст (например: {"os":"macOS","php":"8.3"})'
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              ></textarea>
-              <div v-if="problemForm.errors.metadata" class="text-sm text-red-500 mt-1">{{ problemForm.errors.metadata }}</div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900 transition"
-                :disabled="problemForm.processing"
-              >
-                Добавить
-              </button>
-            </div>
-          </form>
-        </div>
-
-      </div>
-    </div>
-  </AuthenticatedLayout>
-
+  </section>
 </template>
-<style>
-.custom-scroll::-webkit-scrollbar { width: 8px; }
-.custom-scroll::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 6px; }
-.custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-</style>

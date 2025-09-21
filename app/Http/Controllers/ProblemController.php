@@ -48,6 +48,7 @@ class ProblemController extends Controller
             'description' => 'required|string',
             // если metadata приходит строкой из инпута:
             'metadata'    => 'nullable|string',
+            'personaly'  => 'nullable|boolean|max:255',
             // если хочешь принимать JSON из фронта как объект — используй:
             // 'metadata' => 'nullable|array',
         ]);
@@ -73,6 +74,8 @@ class ProblemController extends Controller
             'title'       => $validated['title'],
             'description' => $validated['description'],
             'metadata'    => $meta, // <- массив/null (Eloquent превратит в JSON)
+            'personaly'   => $request->input('personaly', false),
+            'user_id'     => optional(Auth::user())->id,
         ]);
 
         return back()->with('success', 'Проблема успешно добавлена!');

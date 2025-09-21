@@ -9,10 +9,12 @@ class Problem extends Model
 {
     use Searchable;
     protected $fillable =[
+        'user_id',
         'slug'          ,
         'title'         ,
         'description'    ,
         'metadata',
+        'personaly',
     ];
 
     public function searchableAs(): string { return 'problems'; }
@@ -23,8 +25,13 @@ class Problem extends Model
     {
         return $this->hasMany(Solution::class);
     }
+    public function user()
+    {
+        return $this->BelongTo(User::class);
+    }
     protected $casts = [
         'metadata' => 'array',
+        'personaly' => 'boolean',
     ];
     public function toSearchableArray(): array
     {

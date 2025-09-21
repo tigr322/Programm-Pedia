@@ -10,6 +10,7 @@ class Solution extends Model
     use Searchable;
     public function searchableAs(): string { return 'solutions'; }
     protected $fillable = [
+        'user_id',
         'problem_id',
         'slug',
         'title',
@@ -22,6 +23,7 @@ class Solution extends Model
         'links',
         'score',
         'markdown',
+        'personaly',
 
         'language',
         // добавляем новые
@@ -38,7 +40,10 @@ class Solution extends Model
     {
         return $this->belongsTo(Problem::class);
     }
-
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function tags()
     {
         return $this->belongsToMany(TechTag::class, 'solution_tag')
@@ -61,7 +66,7 @@ class Solution extends Model
             'problem_id' => $this->problem_id,
             'content'    => strip_tags($this->content),
             'has_pdf'    => (bool)$this->pdf_path,
-           
+
             'created_at' => $this->created_at?->toISOString(),
         ];
     }
