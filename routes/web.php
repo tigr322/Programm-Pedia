@@ -28,8 +28,13 @@ Route::get('/search', [SearchController::class, 'index'])
             ->latest('id');
     
         if (!auth()->check()) {
-            // гость видит только публичные
-            $problems = $base->where('personaly', false)->get();
+            // гость видит только публичные (false или null)
+            $problems = $base
+                ->where(function ($q) {
+                    $q->where('personaly', false)
+                      ->orWhereNull('personaly');
+                })
+                ->get();
         } else {
             // авторизованный видит всё
             $problems = $base->get();
@@ -39,6 +44,7 @@ Route::get('/search', [SearchController::class, 'index'])
             'problems' => $problems,
         ]);
     })->name('dashboard');
+    
     
     
 Route::get('/solutions/{solution}/download', [SolutionController::class, 'download'])
