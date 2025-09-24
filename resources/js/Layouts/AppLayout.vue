@@ -16,10 +16,12 @@ const mobileMenuOpen = ref(false)
         <header class="border-b bg-white shadow-sm">
             <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
                 <!-- Лого -->
-                <Link class="font-bold text-2xl text-indigo-600 tracking-wide" href="/">
-                    ProgrammPedia
-                </Link>
-
+                <div class="flex items-center gap-3">
+                    <img alt="Logo" src="/favicon.png" style="max-height: 32px; max-width: 32px;"/>
+                    <Link class="font-bold text-2xl text-indigo-600 tracking-wide" href="/">
+                        ProgrammPedia
+                    </Link>
+                </div>
                 <!-- Навигация для десктопа -->
                 <nav class="hidden md:flex gap-8 text-gray-700 font-medium">
                     <Link class="hover:text-indigo-600 transition" href="/">Главная</Link>
@@ -112,11 +114,11 @@ const mobileMenuOpen = ref(false)
         <main class="flex-1">
             <slot/>
         </main>
-
-        <footer class="border-t bg-gray-50">
-            <div class="max-w-7xl mx-auto px-6 py-6 text-sm text-gray-600">
-                © {{ new Date().getFullYear() }} ProgrammPedia
+        <footer class="py-6 bg-white border-t">
+            <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+                © {{ new Date().getFullYear() }} ProgrammPedia. Сделано для программистов ❤
             </div>
         </footer>
+        
     </div>
 </template>
