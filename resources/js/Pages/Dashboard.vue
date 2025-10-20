@@ -137,8 +137,19 @@ const submitProblem = () => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
 
+                <!-- Page header -->
+                <div class="relative overflow-hidden rounded-2xl border border-gray-100 bg-white/70 backdrop-blur p-6 shadow-sm">
+                    <div class="pointer-events-none absolute -top-14 -right-10 h-40 w-40 rounded-full bg-gradient-to-br from-indigo-200 to-purple-200 opacity-60 blur-2xl"></div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">Моя ProgrammPedia</h1>
+                    <p class="mt-2 text-gray-600">Управляйте проблемами и решениями. Редактируйте, добавляйте PDF, открывайте в отдельном окне.</p>
+                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-gray-600">
+                        <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1">📦 Решений: {{ (problems||[]).reduce((a,p)=>a+(p.solutions?.length||0),0) }}</span>
+                        <span class="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1">🧩 Проблем: {{ problems?.length || 0 }}</span>
+                    </div>
+                </div>
+
                 <!-- Список проблем -->
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white/70 backdrop-blur p-6 shadow">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">
                         📌 Список проблем и решений
                     </h2>
@@ -147,7 +158,7 @@ const submitProblem = () => {
                         <li
                             v-for="prb in problems"
                             :key="String(prb.id)"
-                            class="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition"
+                            class="rounded-2xl border border-gray-100 p-5 bg-white hover:shadow-lg transition"
                         >
                             <div class="flex items-start justify-between gap-4">
                                 <div>
@@ -164,7 +175,7 @@ const submitProblem = () => {
 
                                 <div class="flex flex-col sm:flex-row gap-2">
                                     <button
-                                        class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
+                                        class="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                                         @click="toggleObjKey(openSolutions, prb.id)"
                                     >
                                         {{ openSolutions[prb.id] ? 'Скрыть решения' : 'Показать решения' }}
@@ -175,7 +186,7 @@ const submitProblem = () => {
                                     </button>
 
                                     <button v-if="isAuthed"
-                                            class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                                            class="px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm"
                                             @click="toggleObjKey(openAddForm, prb.id)"
                                     >
                                         {{ openAddForm[prb.id] ? 'Отменить' : 'Добавить решение' }}
@@ -191,7 +202,7 @@ const submitProblem = () => {
                                 <div v-if="prb.solutions && prb.solutions.length" class="space-y-3">
 
                                     <div v-for="sol in prb.solutions" :key="String(sol.id)"
-                                         class="rounded-md border bg-white p-3">
+                                         class="rounded-xl border border-gray-100 bg-white/80 backdrop-blur p-4 shadow-sm">
                                         <div class="text-sm text-gray-500">
                                             {{ sol.slug ?? 'Без названия' }}
                                         </div>
@@ -201,19 +212,19 @@ const submitProblem = () => {
                                         <div class="flex items-center justify-between mb-2">
                                             <button
                                                 v-if="sol.pdf_path"
-                                                class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                                                class="px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm"
                                                 @click="downloadPdf(sol)">
                                                 Скачать PDF
                                             </button>
 
 
                                             <button
-                                                class="px-3 py-2 text-sm rounded-lg border bg-white hover:bg-gray-100"
+                                                class="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
                                                 @click="openFloatingWindow({ ...sol, problem: { id: prb.id } })">
                                                 Открыть в отдельном окне
                                             </button>
                                             <button v-if="isAuthed"
-                                                    class="px-3 py-2 text-sm rounded-lg bg-indigo-700 text-white hover:bg-indigo-900"
+                                                    class="px-3 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm"
                                                     @click="openEdit(sol, prb.id)"
                                             >
                                                 {{ openEditForm[String(sol.id)] ? 'Отменить' : 'Редактировать' }}
@@ -245,7 +256,7 @@ const submitProblem = () => {
 
                                         <!-- Форма редактирования -->
                                         <div v-if="openEditForm[String(sol.id)]"
-                                             class="mt-4 rounded-md border p-4 bg-white">
+                                             class="mt-4 rounded-xl border border-gray-200 p-4 bg-white shadow-sm">
                                             <h4 class="text-sm font-semibold text-gray-700 mb-3">Редактировать
                                                 решение</h4>
                                             <input
@@ -286,7 +297,7 @@ const submitProblem = () => {
 
                                                 <div class="flex items-center gap-3 pt-2">
                                                     <button
-                                                        class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50"
+                                                        class="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
                                                         type="button"
                                                         @click="openEditForm[String(sol.id)] = false"
                                                     >
@@ -294,7 +305,7 @@ const submitProblem = () => {
                                                     </button>
                                                     <button
                                                         :disabled="editForms[String(sol.id)].processing"
-                                                        class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
+                                                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 shadow-sm disabled:opacity-60"
                                                         type="button"
                                                         @click="submitEdit(prb.id, sol.id)"
                                                     >
@@ -314,7 +325,7 @@ const submitProblem = () => {
                             </div>
 
                             <!-- Форма добавления решения -->
-                            <div v-if="openAddForm[String(prb.id)]" class="mt-5 rounded-md border bg-white p-4">
+                            <div v-if="openAddForm[String(prb.id)]" class="mt-5 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                                 <h4 class="text-sm font-semibold text-gray-700 mb-3">Добавить решение</h4>
 
                                 <form class="space-y-4" enctype="multipart/form-data"
@@ -373,7 +384,7 @@ const submitProblem = () => {
                                     <div class="flex items-center gap-3">
                                         <button
                                             :disabled="solutionForms[prb.id].processing"
-                                            class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900"
+                                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 shadow-sm disabled:opacity-60"
                                             type="submit"
                                         >
                                             Сохранить
@@ -391,7 +402,7 @@ const submitProblem = () => {
                 </div>
 
                 <!-- Форма добавления ПРОБЛЕМЫ -->
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white/70 backdrop-blur p-6 shadow">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">
                         ➕ Добавить проблему
                     </h2>
@@ -467,7 +478,7 @@ const submitProblem = () => {
                         <div>
                             <button
                                 :disabled="problemForm.processing"
-                                class="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-900 transition"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition shadow-sm disabled:opacity-60"
                                 type="submit"
                             >
                                 Добавить
